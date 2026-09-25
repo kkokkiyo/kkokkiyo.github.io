@@ -25,11 +25,11 @@ export const CATEGORIES = {
 
 // giscus 댓글 설정 (비어 있으면 댓글 비활성화)
 export const GISCUS = {
-  repo: '',
-  repoId: '',
-  category: 'Comments',
-  categoryId: '',
+  repo: 'kkokkiyo/kkokkiyo.github.io',
+  repoId: 'R_kgDOUrjVYw',
+  category: 'Announcements',
+  categoryId: 'DIC_kwDOUrjVY84DGYjM',
 };
 
 // GoatCounter 방문 통계 코드 (비어 있으면 비활성화)
-export const GOATCOUNTER = '';
+export const GOATCOUNTER = 'kkokkiyo';
