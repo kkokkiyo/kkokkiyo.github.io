@@ -1,0 +1,31 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { CATEGORIES } from '../consts';
+import { projectBadges } from '../data/badges';
+import Badges from './Badges.astro';
+
+interface Props {
+  project: CollectionEntry<'projects'>;
+  lang?: 'ko' | 'en';
+}
+
+const { project, lang = 'ko' } = Astro.props;
+const { id, data } = project;
+const title = lang === 'en' ? (data.titleEn || data.title) : data.title;
+const summary = lang === 'en' ? (data.summaryEn || data.summary) : data.summary;
+---
+
+<article
+  data-category={data.category}
+  class="group relative flex flex-col rounded-xl border border-zinc-200 p-5 transition hover:border-accent dark:border-zinc-800"
+>
+  <p class="text-xs text-zinc-500">{lang === 'ko' && `${CATEGORIES[data.category]} · `}{data.period}</p>
+  <h3 class="mt-1 text-lg font-semibold group-hover:text-accent">
+    <a href={`/projects/${id}/`} class="after:absolute after:inset-0">{title}</a>
+  </h3>
+  {lang === 'ko' && <div class="mt-2"><Badges badges={projectBadges(project)} /></div>}
+  <p class="mt-2 flex-1 text-sm text-zinc-600 dark:text-zinc-400">{summary}</p>
+  <ul class="mt-4 flex flex-wrap gap-1.5" aria-label={lang === 'en' ? 'Tech stack' : '기술 스택'}>
+    {data.stack.slice(0, 5).map((s) => <li class="rounded bg-zinc-100 px-2 py-0.5 text-xs dark:bg-zinc-800">{s}</li>)}
+  </ul>
+</article>

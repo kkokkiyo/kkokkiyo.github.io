@@ -1,0 +1,48 @@
+---
+// Dot Pad 60×40 핀 표시 (pins: 60자 문자열 40줄, '1' = 올라온 핀)
+interface Props {
+  pins?: string[];
+  label: string;
+  caption?: string;
+}
+
+const COLS = 60;
+const ROWS = 40;
+
+// 기본 패턴: 팩맨과 먹이 점
+function pacman(): string[] {
+  const rows: string[] = [];
+  for (let y = 0; y < ROWS; y++) {
+    let line = '';
+    for (let x = 0; x < COLS; x++) {
+      const dx = x - 18, dy = y - 20;
+      const inCircle = dx * dx + dy * dy <= 13 * 13;
+      const inMouth = dx > 0 && Math.abs(dy) < dx * 0.7;
+      const food = y === 20 && x > 34 && x % 6 === 2;
+      line += (inCircle && !inMouth) || food ? '1' : '0';
+    }
+    rows.push(line);
+  }
+  return rows;
+}
+
+const { pins = pacman(), label, caption = `Dot Pad 60×40 핀 시뮬레이션 · ${label}` } = Astro.props;
+---
+
+<figure class="rounded-2xl bg-zinc-900 p-3 sm:p-5">
+  <div
+    role="img"
+    aria-label={label}
+    class="grid aspect-[3/2] w-full gap-[2px]"
+    style={`grid-template-columns: repeat(${COLS}, 1fr);`}
+  >
+    {
+      pins.flatMap((row) =>
+        [...row.padEnd(COLS, '0').slice(0, COLS)].map((p) => (
+          <span class:list={['aspect-square rounded-full', p === '1' ? 'bg-zinc-100 shadow-[0_0_4px_rgba(255,255,255,.6)]' : 'bg-zinc-700']} />
+        )),
+      )
+    }
+  </div>
+  <figcaption class="mt-3 text-center text-xs text-zinc-300">{caption}</figcaption>
+</figure>

@@ -1,0 +1,46 @@
+---
+import Base from '../layouts/Base.astro';
+import ItemList from '../components/ItemList.astro';
+import { SITE } from '../consts';
+import { skills, awards, activities, certs, graduation } from '../data/profile';
+
+const sections = [
+  { title: '수상', items: awards },
+  { title: '대회·해커톤', items: activities },
+  { title: '자격·교육', items: certs },
+];
+---
+
+<Base title="About" description="이동찬 소개">
+  <h1 class="py-8 text-3xl font-bold">About</h1>
+  <p class="text-lg">{SITE.affiliation} 이동찬입니다. {SITE.tagline}가 되고자 합니다.</p>
+  <p class="mt-2 text-zinc-500">{graduation}</p>
+  <p class="mt-4"><a href="/cv/" class="text-accent hover:underline">이력서 보기 · PDF 저장 →</a></p>
+
+  <h2 class="mt-12 text-xl font-bold">Skills</h2>
+  <dl class="mt-4 grid gap-3 sm:grid-cols-[9rem_1fr]">
+    {
+      Object.entries(skills).map(([k, v]) => (
+        <>
+          <dt class="font-semibold">{k}</dt>
+          <dd class="text-zinc-600 dark:text-zinc-400">{v.join(', ')}</dd>
+        </>
+      ))
+    }
+  </dl>
+
+  {
+    sections.map(({ title, items }) => (
+      <section>
+        <h2 class="mt-12 text-xl font-bold">{title}</h2>
+        <div class="mt-4"><ItemList items={items} /></div>
+      </section>
+    ))
+  }
+
+  <h2 class="mt-12 text-xl font-bold">Contact</h2>
+  <p class="mt-4">
+    <a class="text-accent hover:underline" href={`mailto:${SITE.email}`}>{SITE.email}</a> ·
+    <a class="text-accent hover:underline" href={SITE.github}>GitHub</a>
+  </p>
+</Base>

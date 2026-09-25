@@ -1,0 +1,36 @@
+---
+title: Dot Pad 게임 접근성 프레임워크
+summary: 게임 화면·로그를 통합 GameState로 만들어 시각장애인이 Dot Pad 촉각 탐색과 점자/음성 질의로 게임을 플레이하게 돕는 범용 프레임워크
+period: "2026.08 – 진행 중"
+category: accessibility
+stack: [Python, OCR, OmniParser, SAM2, pytest]
+highlights:
+  - 실제 하스스톤 Power.log 12,922건 재생 → 공개 이벤트 657개 파생
+  - GameState 개체 15종 매핑, 테스트 19/19 통과
+  - Phase 1(범용 촉각 프로토타입)·Phase 2(하스스톤 어댑터) 완료
+role: 개인 연구 (설계·구현 전반)
+status: ongoing
+titleEn: Tactile Game Accessibility Framework
+summaryEn: A general framework that fuses screen, log and game-adapter signals into one GameState so blind players can explore games on a Dot Pad and query them via braille or speech.
+order: 2
+---
+
+## 문제
+
+턴제 게임의 화면은 카드, 체력, 보드 상태 같은 공간 정보로 가득하지만 스크린 리더는 이를 읽지 못합니다.
+
+## 접근
+
+- 화면 인식(OCR, OmniParser, SAM2)과 게임 로그, 게임별 어댑터에서 후보를 모아 **하나의 GameState로 융합**
+- 공통 스키마(game-perception Core Spec)로 게임이 바뀌어도 재사용
+- 에이전트가 대신 플레이하지 않고, **사용자가 확인한 제한적 행동만** 수행하도록 설계
+
+## 결과
+
+실제 하스스톤 로그 재생과 스크린샷 검증으로 파이프라인을 확인했습니다.
+
+## 다음 단계
+
+처음에는 하스스톤에서만 잘 돌아가면 된다고 생각했지만, 다양한 게임에 쓸 수 있는 범용 프레임워크로 방향을 넓혔습니다.
+게임마다 로그나 API가 있는 것은 아니므로 **비전과 OCR만으로 객체 위치와 상태를 뽑는 방법**이 필수라고 보고,
+직접 만든 팩맨 게임으로 데이터셋과 검출 모델을 먼저 실험하고 있습니다([Dot Pacman](/projects/dot-pacman/)).

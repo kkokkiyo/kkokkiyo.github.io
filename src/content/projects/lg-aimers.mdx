@@ -1,0 +1,24 @@
+---
+title: LG Aimers 8기 모델 경량화
+summary: EXAONE 모델을 FP8·KV 캐시 양자화와 캘리브레이션 데이터 설계로 경량화하면서 일반화 성능을 유지한 대회 프로젝트
+period: "2026.03 – 2026.04"
+category: ai
+stack: [EXAONE, FP8 양자화, KV Cache 양자화, LoRA, QLoRA, SFT]
+highlights:
+  - DACON Private 리더보드 최종 3위, 발표 기회 획득
+  - 팀장으로 LoRA·QLoRA·SFT·캘리브레이션 실험을 분담하고 결과를 통합
+role: 팀장
+titleEn: LG Aimers 8th — Model Compression
+summaryEn: Compressed EXAONE with FP8 weights and KV-cache quantization plus a carefully designed calibration set, finishing 3rd on the private leaderboard as team leader.
+order: 3
+---
+
+## 접근
+
+- **FP8 가중치 + KV 캐시 양자화**로 추론 시 메모리 부담 감소
+- 캘리브레이션 데이터셋을 **셔플해 평탄화한 뒤 청크 단위로 분할**. 청크는 단어 단위로 끊어 단어가 잘리지 않게 함
+- 아웃라이어를 평탄화해 양자화 후에도 일반화 성능 유지
+
+## 팀 운영
+
+팀원들에게 LoRA, QLoRA, SFT, 캘리브레이션 데이터셋 비교 실험을 나눠 맡기고, 점수가 좋은 설정을 조합해 최종 제출안을 만들었습니다.

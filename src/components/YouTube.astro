@@ -1,0 +1,33 @@
+---
+// 클릭하면 로드되는 YouTube 임베드
+interface Props {
+  id: string;
+  title: string;
+}
+
+const { id, title } = Astro.props;
+---
+
+<div class="yt not-prose relative my-6 aspect-video overflow-hidden rounded-xl bg-black" data-id={id} data-title={title}>
+  <button type="button" class="group absolute inset-0 h-full w-full cursor-pointer">
+    <img src={`https://i.ytimg.com/vi/${id}/hqdefault.jpg`} alt="" class="h-full w-full object-cover opacity-80 group-hover:opacity-100" loading="lazy" />
+    <span class="absolute inset-0 flex items-center justify-center">
+      <span class="rounded-full bg-red-600 px-5 py-3 text-sm font-semibold text-white shadow-lg">▶ {title} 재생</span>
+    </span>
+  </button>
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>('.yt').forEach((el) =>
+    el.querySelector('button')!.addEventListener('click', () => {
+      const iframe = document.createElement('iframe');
+      iframe.src = `https://www.youtube-nocookie.com/embed/${el.dataset.id}?autoplay=1`;
+      iframe.title = el.dataset.title!;
+      iframe.allow = 'autoplay; encrypted-media; picture-in-picture';
+      iframe.allowFullscreen = true;
+      iframe.className = 'absolute inset-0 h-full w-full';
+      el.replaceChildren(iframe);
+      iframe.focus();
+    }),
+  );
+</script>

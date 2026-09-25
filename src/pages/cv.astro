@@ -1,0 +1,97 @@
+---
+import { getFeaturedProjects } from '../data/featured';
+// 인쇄용 A4 이력서
+import Base from '../layouts/Base.astro';
+import ItemList from '../components/ItemList.astro';
+import { SITE } from '../consts';
+import { skills, awards, activities, certs, graduation } from '../data/profile';
+
+const projects = await getFeaturedProjects();
+const site = Astro.site!.host;
+---
+
+<Base title="CV" description="이동찬 이력서">
+  <div class="no-print flex items-center justify-between py-6">
+    <p class="text-sm text-zinc-500">인쇄 대화상자에서 "PDF로 저장"을 선택하세요.</p>
+    <button type="button" id="print" class="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white dark:text-zinc-950 hover:opacity-90">PDF로 저장</button>
+  </div>
+
+  <article class="cv text-[15px] leading-relaxed">
+    <header class="border-b-2 border-zinc-800 pb-3 dark:border-zinc-200">
+      <h1 class="text-3xl font-bold">{SITE.author} <span class="text-lg font-normal text-zinc-500">Lee Dongchan</span></h1>
+      <p class="mt-1">{SITE.tagline}</p>
+      <p class="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+        {SITE.affiliation} · {graduation} · {SITE.email} · {SITE.github.replace('https://', '')} · {site}
+      </p>
+    </header>
+
+    <section class="mt-5">
+      <h2 class="cv-h">Projects</h2>
+      <ul class="space-y-3">
+        {
+          projects.map(({ id, data }) => (
+            <li class="break-inside-avoid">
+              <div class="flex flex-wrap items-baseline justify-between gap-x-3">
+                <a href={`/projects/${id}/`} class="font-semibold hover:text-accent">
+                  {data.title}
+                  {data.status === 'ongoing' && <span class="font-normal text-zinc-500"> (진행 중)</span>}
+                </a>
+                <span class="text-sm text-zinc-500">{data.period}</span>
+              </div>
+              <p class="text-sm">{data.summary}</p>
+              <p class="text-sm text-zinc-600 dark:text-zinc-400">
+                {[data.award && `수상: ${data.award}`, data.role && `역할: ${data.role}`, ...(data.award ? [] : data.highlights.slice(0, 1))].filter(Boolean).join(' · ')}
+              </p>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <div class="mt-5 grid gap-5 sm:grid-cols-2 print:grid-cols-2">
+      <section><h2 class="cv-h">수상</h2><ItemList items={awards} compact /></section>
+      <section><h2 class="cv-h">자격·교육</h2><ItemList items={certs} compact /></section>
+    </div>
+    <section class="mt-5"><h2 class="cv-h">대회·해커톤</h2><ItemList items={activities} compact /></section>
+
+    <section class="mt-5">
+      <h2 class="cv-h">Skills</h2>
+      <dl class="grid grid-cols-[8rem_1fr] gap-1 text-sm">
+        {Object.entries(skills).map(([k, v]) => (<><dt class="font-semibold">{k}</dt><dd>{v.join(', ')}</dd></>))}
+      </dl>
+    </section>
+  </article>
+</Base>
+
+<style is:global>
+  .cv-h {
+    margin-bottom: 0.5rem;
+    border-bottom: 1px solid var(--color-zinc-300);
+    padding-bottom: 0.25rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+  }
+  @media print {
+    @page { size: A4; margin: 14mm; }
+    html { font-size: 12px; }
+    html, body { background: white !important; color: black !important; }
+    main { padding: 0 !important; max-width: none !important; }
+    .cv a { text-decoration: none; color: inherit; }
+  }
+</style>
+
+<script>
+  document.getElementById('print')?.addEventListener('click', () => window.print());
+  // 인쇄 중에는 라이트 테마 적용
+  let prevTheme: string | undefined;
+  addEventListener('beforeprint', () => {
+    prevTheme = document.documentElement.dataset.theme;
+    document.documentElement.dataset.theme = 'light';
+  });
+  addEventListener('afterprint', () => {
+    if (prevTheme) document.documentElement.dataset.theme = prevTheme;
+  });
+</script>

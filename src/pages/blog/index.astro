@@ -1,0 +1,39 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+
+const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
+);
+const series = [...new Set(posts.map((p) => p.data.series).filter(Boolean))] as string[];
+---
+
+<Base title="Blog" description="개발, 연구, 대회 회고">
+  <div class="flex items-baseline justify-between py-8">
+    <h1 class="text-3xl font-bold">Blog</h1>
+    <a href="/rss.xml" class="text-sm text-zinc-500 hover:text-accent">RSS 구독</a>
+  </div>
+  {
+    series.length > 0 && (
+      <p class="mb-8 text-sm text-zinc-500">
+        시리즈: {series.map((s, i) => <>{i > 0 && ' · '}<span class="font-medium text-zinc-700 dark:text-zinc-300">{s}</span></>)}
+      </p>
+    )
+  }
+  <ul class="space-y-8">
+    {
+      posts.map((post) => (
+        <li>
+          <p class="text-sm text-zinc-500">
+            <time datetime={post.data.date.toISOString()}>{post.data.date.toLocaleDateString('ko-KR')}</time>
+            {post.data.series && <> · {post.data.series}</>}
+          </p>
+          <h2 class="text-xl font-semibold">
+            <a href={`/blog/${post.id}/`} class="hover:text-accent">{post.data.title}</a>
+          </h2>
+          <p class="mt-1 text-zinc-600 dark:text-zinc-400">{post.data.description}</p>
+        </li>
+      ))
+    }
+  </ul>
+</Base>

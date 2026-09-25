@@ -1,0 +1,24 @@
+---
+// 2~3단 이미지 갤러리
+import { Image } from 'astro:assets';
+import { resolveImage } from '../data/images';
+
+interface Props {
+  images: { src: string; alt: string; caption?: string }[];
+  columns?: '2' | '3' | 2 | 3;
+}
+
+const { images = [], columns = '2' } = Astro.props;
+const cols = String(columns) === '3' ? 'sm:grid-cols-3' : 'sm:grid-cols-2';
+---
+
+<div class:list={['not-prose my-8 grid gap-4', cols]}>
+  {
+    images.map((img) => (
+      <figure>
+        <Image src={resolveImage(img.src)} alt={img.alt} class="aspect-[4/3] w-full rounded-xl object-cover" widths={[400, 800]} sizes="(max-width: 640px) 100vw, 450px" />
+        {img.caption && <figcaption class="mt-2 text-sm text-zinc-500">{img.caption}</figcaption>}
+      </figure>
+    ))
+  }
+</div>

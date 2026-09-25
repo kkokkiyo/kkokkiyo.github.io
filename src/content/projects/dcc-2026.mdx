@@ -1,0 +1,14 @@
+---
+title: 119 신고 대화 증상 분류 (DCC 2026)
+summary: 119 신고 대화에서 환자 증상을 다중 라벨로 분류하는 한국어 NLP 과제
+period: "2026.09"
+category: ai
+stack: [KLUE-RoBERTa, LoRA, Qwen2.5 QLoRA, scikit-learn]
+highlights:
+  - Macro F1 0.4716(TF-IDF) → 0.5254(KLUE-RoBERTa), 앙상블 0.5279
+  - paired bootstrap 95% CI로 개선 유의성 검증
+role: 개인
+order: 10
+---
+
+학습 127,178건 규모에서 v6~v18까지 실험을 기록하며, 데이터 누수 점검과 threshold calibration, 중첩 CV로 결과를 검증했습니다.

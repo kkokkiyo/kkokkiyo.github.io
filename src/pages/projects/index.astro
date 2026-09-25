@@ -1,0 +1,59 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
+import { CATEGORIES } from '../../consts';
+
+const projects = (await getCollection('projects', ({ data }) => !data.draft)).sort(
+  (a, b) => a.data.order - b.data.order,
+);
+---
+
+<Base title="Projects" description="이동찬의 프로젝트 모음">
+  <h1 class="py-8 text-3xl font-bold">Projects</h1>
+  <div class="mb-6 flex flex-wrap gap-2 text-sm" role="group" aria-label="분류 필터">
+    <button type="button" data-filter="all" aria-pressed="true" class="filter">전체</button>
+    {
+      Object.entries(CATEGORIES).map(([key, label]) => (
+        <button type="button" data-filter={key} aria-pressed="false" class="filter">
+          {label}
+        </button>
+      ))
+    }
+  </div>
+  <div id="project-grid" class="grid gap-4 sm:grid-cols-2">
+    {projects.map((p) => <ProjectCard project={p} />)}
+  </div>
+</Base>
+
+<style>
+  .filter {
+    border-radius: 9999px;
+    border: 1px solid var(--color-zinc-300);
+    padding: 0.25rem 0.875rem;
+    cursor: pointer;
+  }
+  .filter[aria-pressed='true'] {
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+    color: white;
+  }
+  :global([data-theme='dark']) .filter {
+    border-color: var(--color-zinc-700);
+  }
+  :global([data-theme='dark']) .filter[aria-pressed='true'] {
+    color: var(--color-zinc-950);
+  }
+</style>
+
+<script>
+  const buttons = document.querySelectorAll<HTMLButtonElement>('[data-filter]');
+  const cards = document.querySelectorAll<HTMLElement>('#project-grid [data-category]');
+  buttons.forEach((btn) =>
+    btn.addEventListener('click', () => {
+      const f = btn.dataset.filter;
+      buttons.forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
+      cards.forEach((c) => (c.hidden = f !== 'all' && c.dataset.category !== f));
+    }),
+  );
+</script>

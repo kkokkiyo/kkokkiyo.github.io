@@ -1,0 +1,37 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="검색" description="사이트 내 검색">
+  <h1 class="py-8 text-3xl font-bold">검색</h1>
+  <link href="/pagefind/pagefind-ui.css" rel="stylesheet" />
+  <div id="search"></div>
+  <noscript>검색은 자바스크립트가 필요합니다.</noscript>
+  <p id="search-dev" class="hidden text-sm text-zinc-500">검색 색인은 <code>npm run build</code> 후에 만들어집니다. 개발 서버에서는 동작하지 않아요.</p>
+</Base>
+
+<script is:inline>
+  const s = document.createElement('script');
+  s.src = '/pagefind/pagefind-ui.js';
+  s.onload = () =>
+    new PagefindUI({
+      element: '#search',
+      showSubResults: true,
+      translations: { placeholder: '프로젝트, 글 검색', zero_results: '"[SEARCH_TERM]"에 대한 결과가 없어요.' },
+    });
+  s.onerror = () => document.getElementById('search-dev').classList.remove('hidden');
+  document.head.append(s);
+</script>
+
+<style is:global>
+  #search {
+    --pagefind-ui-primary: var(--color-accent);
+    --pagefind-ui-font: inherit;
+  }
+  [data-theme='dark'] #search {
+    --pagefind-ui-text: #e4e4e7;
+    --pagefind-ui-background: #09090b;
+    --pagefind-ui-border: #3f3f46;
+    --pagefind-ui-tag: #27272a;
+  }
+</style>

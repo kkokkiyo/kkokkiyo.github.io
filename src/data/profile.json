@@ -1,0 +1,119 @@
+{
+  "graduation": "2028년 2월 졸업 예정",
+  "skills": [
+    {
+      "category": "Languages",
+      "items": [
+        "Python",
+        "TypeScript/JavaScript",
+        "C",
+        "Java",
+        "SQL"
+      ]
+    },
+    {
+      "category": "AI/ML",
+      "items": [
+        "PyTorch",
+        "Ultralytics YOLO",
+        "SAM",
+        "Diffusers(SD/LoRA)",
+        "양자화(FP8, KV Cache)",
+        "MediaPipe",
+        "OpenCV"
+      ]
+    },
+    {
+      "category": "Backend/Infra",
+      "items": [
+        "FastAPI",
+        "Flask",
+        "BentoML",
+        "Docker",
+        "GitHub Actions"
+      ]
+    },
+    {
+      "category": "Frontend/XR",
+      "items": [
+        "React",
+        "Astro",
+        "Unity"
+      ]
+    },
+    {
+      "category": "Hardware",
+      "items": [
+        "Arduino",
+        "Raspberry Pi",
+        "Dot Pad SDK"
+      ]
+    }
+  ],
+  "awards": [
+    {
+      "date": "2026",
+      "name": "GIST AI창의융합경진대회 트랙 2 HAI 경험설계경진대회 최우수상",
+      "nameEn": "Grand Prize, GIST AI Creative Convergence Competition (Track 2, HAI Experience Design)",
+      "note": "SafeLift XR · 팀 EHC"
+    },
+    {
+      "date": "2025",
+      "name": "NYPC 코드배틀 100 특별상",
+      "nameEn": "Special Award, NYPC Code Battle 100",
+      "note": ""
+    }
+  ],
+  "activities": [
+    {
+      "date": "2026.09",
+      "name": "NVIDIA × 패스트캠퍼스 Agentic AI 해커톤",
+      "nameEn": "NVIDIA × FastCampus Agentic AI Hackathon",
+      "note": "SkillForge · 팀 TraceMakers"
+    },
+    {
+      "date": "2026.09",
+      "name": "DCC 2026",
+      "nameEn": "DCC 2026",
+      "note": "119 신고 대화 증상 다중 라벨 분류"
+    },
+    {
+      "date": "2026.04",
+      "name": "LG Aimers 8기 모델 경량화",
+      "nameEn": "LG Aimers 8th — Model Compression",
+      "note": "DACON Private 최종 3위, 발표"
+    },
+    {
+      "date": "2026.04",
+      "name": "자람 공공데이터 공모전",
+      "nameEn": "Jaram Public Data Contest",
+      "note": "산재 코드 예측 RAG, 임베딩 서빙"
+    }
+  ],
+  "certs": [
+    {
+      "date": "",
+      "name": "SQLD (SQL 개발자)",
+      "nameEn": "SQLD (SQL Developer)",
+      "note": ""
+    },
+    {
+      "date": "",
+      "name": "데이터 크리에이터 캠프 수료",
+      "nameEn": "Data Creator Camp",
+      "note": ""
+    },
+    {
+      "date": "",
+      "name": "KAIST 데이터 교육 과정 수료",
+      "nameEn": "KAIST Data Course",
+      "note": ""
+    },
+    {
+      "date": "",
+      "name": "AWS Generative AI 교육 수료",
+      "nameEn": "AWS Generative AI Training",
+      "note": "2일 과정"
+    }
+  ]
+}

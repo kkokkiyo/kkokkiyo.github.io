@@ -1,0 +1,96 @@
+---
+import '../styles/global.css';
+import { SITE, NAV, GOATCOUNTER } from '../consts';
+import ViewSettings from '../components/ViewSettings.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+  lang?: 'ko' | 'en';
+  /** 공유 이미지 경로 (/og/<og>.png) */
+  og?: string;
+}
+
+const { title, description = SITE.description, lang = 'ko', og = 'default' } = Astro.props;
+const pageTitle = title ? `${title} | ${SITE.title}` : SITE.title;
+const path = Astro.url.pathname;
+const ogImage = new URL(`/og/${og}.png`, Astro.site);
+const t =
+  lang === 'en'
+    ? { skip: 'Skip to content', nav: 'Main menu', search: 'Search', other: { href: '/', label: '한국어' } }
+    : { skip: '본문으로 건너뛰기', nav: '주 메뉴', search: '검색', other: { href: '/en/', label: 'EN' } };
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script is:inline>
+      // 첫 렌더 전에 저장된 보기 설정 적용
+      (() => {
+        const get = (k) => { try { return localStorage.getItem(k); } catch { return null; } };
+        const r = document.documentElement;
+        const theme = get('theme') ?? 'system';
+        r.dataset.theme = theme === 'system' ? (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme;
+        r.dataset.font = get('font') ?? 'base';
+        r.dataset.contrast = get('contrast') ?? (matchMedia('(prefers-contrast: more)').matches ? 'high' : 'normal');
+      })();
+    </script>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="alternate" type="application/rss+xml" title={SITE.title} href="/rss.xml" />
+    <link rel="canonical" href={new URL(path, Astro.site)} />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
+    />
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={new URL(path, Astro.site)} />
+    <meta property="og:image" content={ogImage} />
+    <meta name="twitter:card" content="summary_large_image" />
+    {GOATCOUNTER && <script is:inline data-goatcounter={`https://${GOATCOUNTER}.goatcounter.com/count`} async src="//gc.zgo.at/count.js" />}
+  </head>
+  <body class="min-h-screen bg-white font-sans text-zinc-800 antialiased dark:bg-zinc-950 dark:text-zinc-200">
+    <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded focus:bg-accent focus:px-3 focus:py-2 focus:text-white dark:focus:text-zinc-950">
+      {t.skip}
+    </a>
+    <header class="no-print mx-auto flex max-w-4xl flex-wrap items-center justify-between gap-x-6 gap-y-3 px-4 py-6">
+      <a href={lang === 'en' ? '/en/' : '/'} class="font-bold tracking-tight">{SITE.title}</a>
+      <div class="flex items-center gap-1 text-sm sm:order-last">
+        <a href="/search/" class="rounded px-2 py-1 hover:text-accent">{t.search}</a>
+        <ViewSettings />
+        <a href={t.other.href} class="rounded px-2 py-1 hover:text-accent" lang={lang === 'en' ? 'ko' : 'en'}>{t.other.label}</a>
+      </div>
+      <nav aria-label={t.nav} class="w-full sm:w-auto">
+        <ul class="flex flex-wrap gap-x-4 gap-y-2 text-sm sm:gap-x-6">
+          {
+            NAV.map(({ href, label }) => (
+              <li>
+                <a
+                  href={href}
+                  aria-current={path.startsWith(href) ? 'page' : undefined}
+                  class="hover:text-accent aria-[current=page]:font-semibold aria-[current=page]:text-accent"
+                >
+                  {label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+    </header>
+    <main id="main" class="mx-auto max-w-4xl px-4 pb-24" data-pagefind-body>
+      <slot />
+    </main>
+    <footer class="no-print mx-auto max-w-4xl border-t border-zinc-200 px-4 py-8 text-sm text-zinc-500 dark:border-zinc-800">
+      © {new Date().getFullYear()} {SITE.author} · <a class="hover:text-accent" href={SITE.github}>GitHub</a> ·{' '}
+      <a class="hover:text-accent" href={`mailto:${SITE.email}`}>Email</a> · <a class="hover:text-accent" href="/rss.xml">RSS</a> ·{' '}
+      <a class="hover:text-accent" href="/accessibility/">접근성</a>
+    </footer>
+  </body>
+</html>

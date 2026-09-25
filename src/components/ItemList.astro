@@ -1,0 +1,25 @@
+---
+import type { Item } from '../data/profile';
+
+interface Props {
+  items: Item[];
+  lang?: 'ko' | 'en';
+  compact?: boolean;
+}
+
+const { items, lang = 'ko', compact = false } = Astro.props;
+---
+
+<ul class:list={[compact ? 'space-y-1 text-sm' : 'space-y-2']}>
+  {
+    items.map((a) => (
+      <li class="flex gap-4">
+        <span class="w-16 shrink-0 text-sm text-zinc-500">{a.date}</span>
+        <span>
+          {lang === 'en' ? (a.nameEn ?? a.name) : a.name}
+          {lang === 'ko' && a.note && <span class="text-zinc-500"> · {a.note}</span>}
+        </span>
+      </li>
+    ))
+  }
+</ul>

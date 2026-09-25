@@ -1,0 +1,58 @@
+---
+// 테마·글자 크기·고대비 설정 메뉴
+---
+
+<details class="view-settings relative">
+  <summary class="cursor-pointer list-none rounded px-2 py-1 text-sm hover:text-accent" aria-label="보기 설정">
+    <span aria-hidden="true">Aa</span>
+  </summary>
+  <div class="absolute right-0 z-20 mt-2 w-60 space-y-4 rounded-xl border border-zinc-200 bg-white p-4 text-sm shadow-lg dark:border-zinc-700 dark:bg-zinc-900">
+    <fieldset>
+      <legend class="mb-1 font-semibold">테마</legend>
+      <div class="flex gap-3">
+        <label><input type="radio" name="theme" value="system" /> 시스템</label>
+        <label><input type="radio" name="theme" value="light" /> 라이트</label>
+        <label><input type="radio" name="theme" value="dark" /> 다크</label>
+      </div>
+    </fieldset>
+    <fieldset>
+      <legend class="mb-1 font-semibold">글자 크기</legend>
+      <div class="flex gap-3">
+        <label><input type="radio" name="font" value="base" /> 기본</label>
+        <label><input type="radio" name="font" value="lg" /> 크게</label>
+        <label><input type="radio" name="font" value="xl" /> 아주 크게</label>
+      </div>
+    </fieldset>
+    <label class="flex items-center gap-2 font-semibold"><input type="checkbox" name="contrast" /> 고대비 모드</label>
+  </div>
+</details>
+
+<script>
+  const root = document.documentElement;
+  const store = {
+    get: (k: string) => { try { return localStorage.getItem(k); } catch { return null; } },
+    set: (k: string, v: string) => { try { localStorage.setItem(k, v); } catch {} },
+  };
+  const mq = matchMedia('(prefers-color-scheme: dark)');
+  const applyTheme = (pref: string) => (root.dataset.theme = pref === 'system' ? (mq.matches ? 'dark' : 'light') : pref);
+
+  const form = document.querySelector<HTMLElement>('.view-settings')!;
+
+  const themePref = store.get('theme') ?? 'system';
+  const fontPref = store.get('font') ?? 'base';
+  form.querySelector<HTMLInputElement>(`input[name="theme"][value="${themePref}"]`)!.checked = true;
+  form.querySelector<HTMLInputElement>(`input[name="font"][value="${fontPref}"]`)!.checked = true;
+  form.querySelector<HTMLInputElement>('input[name="contrast"]')!.checked = root.dataset.contrast === 'high';
+
+  form.addEventListener('change', (e) => {
+    const input = e.target as HTMLInputElement;
+    if (input.name === 'theme') { store.set('theme', input.value); applyTheme(input.value); }
+    if (input.name === 'font') { store.set('font', input.value); root.dataset.font = input.value; }
+    if (input.name === 'contrast') {
+      const v = input.checked ? 'high' : 'normal';
+      store.set('contrast', v); root.dataset.contrast = v;
+    }
+  });
+  mq.addEventListener('change', () => (store.get('theme') ?? 'system') === 'system' && applyTheme('system'));
+  document.addEventListener('keydown', (e) => e.key === 'Escape' && form.removeAttribute('open'));
+</script>

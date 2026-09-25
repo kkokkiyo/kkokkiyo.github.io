@@ -1,0 +1,24 @@
+---
+title: SkillForge
+summary: 에이전트의 성공 실행 기록에서 도구 호출 순서와 인자 참조를 검증해, 재사용 가능한 워크플로로 승격하는 시스템
+period: "2026.09"
+category: ai
+stack: [Python, React, TypeScript, NVIDIA API, LLM Agent]
+highlights:
+  - NVIDIA × 패스트캠퍼스 Agentic AI 해커톤 출품
+  - 검증 → 운영자 활성화 → 재사용 흐름을 Mock/Live 모드로 재현
+role: 팀 TraceMakers
+repo: https://github.com/kkokkiyo/skillforge
+titleEn: SkillForge
+summaryEn: Promotes an agent's verified successful tool-call traces into reusable workflows, built for the NVIDIA Agentic AI Hackathon.
+order: 5
+---
+
+## 문제
+
+LLM 에이전트는 같은 작업을 매번 새로 추론합니다. 이미 성공한 실행 경로를 안전하게 재사용할 수 있을까?
+
+## 접근
+
+환불 에이전트를 사례로, 독립된 성공 기록들에서 **동일한 도구 순서와 인자 참조**를 확인하고, 별도 검증과 운영자 승인을 거쳐 새 주문에 재사용합니다.
+Live 호출이 실패해도 Mock 성공으로 바꾸지 않는 등 평가의 정직성을 우선했습니다.

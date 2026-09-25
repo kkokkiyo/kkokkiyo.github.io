@@ -1,0 +1,20 @@
+---
+// 캡션이 있는 본문 이미지
+import { Image } from 'astro:assets';
+import { resolveImage } from '../data/images';
+
+interface Props {
+  src: string;
+  alt: string;
+  caption?: string;
+  size?: 'small' | 'medium' | 'full';
+}
+
+const { src, alt, caption, size = 'full' } = Astro.props;
+const widths = { small: 'max-w-sm', medium: 'max-w-xl', full: 'max-w-none' };
+---
+
+<figure class:list={['not-prose mx-auto my-8', widths[size]]}>
+  <Image src={resolveImage(src)} alt={alt} class="w-full rounded-xl" widths={[480, 960, 1440]} sizes="(max-width: 896px) 100vw, 896px" />
+  {caption && <figcaption class="mt-2 text-center text-sm text-zinc-500">{caption}</figcaption>}
+</figure>

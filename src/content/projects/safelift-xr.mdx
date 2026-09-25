@@ -1,0 +1,33 @@
+---
+title: SafeLift XR
+summary: 아두이노 센서와 MediaPipe 자세 인식으로 스쿼트 상태를 분석하고, Unity XR 아바타와 AI 리포트로 피드백하는 운동 보조 시스템
+period: "2026"
+category: systems
+stack: [MediaPipe, Unity, Final IK, Arduino, Python, Gemini API]
+highlights:
+  - 2026 제10회 GIST AI창의융합경진대회 트랙 2 HAI 경험설계경진대회 최우수상 (팀 EHC)
+  - 서 있음·스쿼트 중·완전히 앉음·무릎 벌어짐 등 자세 상태 실시간 판정
+role: PM, 백엔드, 프런트엔드(Unity 프로토타입)
+demo: https://youtu.be/okz89rS0WUM
+award: GIST AI창의융합경진대회 최우수상
+titleEn: SafeLift XR
+summaryEn: A squat-assist system that fuses Arduino sensors with MediaPipe pose tracking and gives feedback through a Unity XR avatar and an AI-generated report.
+order: 1
+---
+
+<YouTube id="okz89rS0WUM" title="SafeLift XR 시연 영상" />
+
+## 내가 한 일
+
+- **자세 분석**: MediaPipe Pose로 관절을 추적해 서 있는지, 스쿼트 중인지, 완전히 앉았는지, 무릎이 얼마나 벌어졌는지를 판정하고 Unity로 전송
+- **센서 연동**: 아두이노의 FSR 압력 센서와 IMU 값을 함께 수집
+- **Unity 프로토타입**: 상태 표시 UI와 아바타 움직임
+- **QR 공유**: 노트북에 간이 서버를 띄워 운동 결과를 QR로 바로 확인
+- **AI 리포트**: Gemini API와 프롬프트 엔지니어링으로 운동 결과 리포트 생성
+
+## 어려웠던 문제
+
+**아바타가 순간적으로 튀는 문제.** 자세 인식 자체는 정확했지만, 전송 중 값이 순간적으로 튀면 아바타 관절이 튀었습니다.
+Final IK로 관절 값을 보정해 움직임을 안정화했습니다.
+
+**AI 리포트가 가끔 뜨지 않는 문제.** 원인은 서버 데이터가 다 모이기 전에 리포트를 너무 빨리 호출한 것이었습니다. 호출 시점을 조정해 해결했습니다.

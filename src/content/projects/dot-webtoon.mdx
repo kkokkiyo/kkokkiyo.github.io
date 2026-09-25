@@ -1,0 +1,23 @@
+---
+title: Dot Webtoon
+summary: 웹툰 컷을 촉각 그래픽, OCR, 번역, TTS로 변환해 시각장애인이 웹툰을 읽을 수 있게 하는 서비스와 후속 레이어 분리 연구
+period: "2025.08 – 2026.06"
+category: accessibility
+stack: [FastAPI, YOLO, SAM, OpenCV, Pororo OCR, Google Cloud TTS, Gemini API]
+highlights:
+  - 사용자 연구(user study) 진행
+  - 인물·소품·배경 레이어 분리 실험 앱과 Dot Pad 시뮬레이터 개발
+role: 팀 프로젝트
+titleEn: Dot Webtoon
+summaryEn: Makes webtoons readable for blind users by converting panels into tactile graphics, OCR text, translation and TTS, followed by layer-separation research.
+order: 6
+---
+
+## 1단계: 웹툰 촉각화 서비스 (팀)
+
+웹툰 컷에서 인물과 말풍선을 검출하고, 대사는 OCR·TTS로, 그림은 촉각 그래픽으로 제공합니다.
+
+## 2단계: 레이어 분리 실험 (개인)
+
+60×40 해상도에서는 컷 전체를 그대로 옮기면 알아보기 어렵습니다. 전체 구도, 인물(YOLO), 소품(SAM/YOLO), 배경을 레이어로 분리하고
+노이즈 제거·선 굵기를 조절하며 가장 읽기 쉬운 구성을 비교했습니다.

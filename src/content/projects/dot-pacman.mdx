@@ -1,0 +1,32 @@
+---
+title: Dot Pacman
+summary: 팩맨 게임 화면을 실시간으로 인식해 Dot Pad 촉각 그래픽으로 렌더링하는 게임 접근성 프로토타입
+period: "2026.09"
+category: accessibility
+stack: [Python, Ultralytics YOLO, PyTorch, 합성 데이터]
+highlights:
+  - 테스트셋 mAP@50 0.993, Precision 0.966, Recall 0.962
+  - RTX 5070 기준 1.9ms/img
+  - 게임 코드에서 정답 라벨을 자동 생성한 합성 데이터 3,000장
+role: 개인 연구
+status: ongoing
+order: 7
+---
+
+<CompareSlider
+  before="/src/assets/projects/dot-pacman/pacman-detect.png"
+  after="/src/assets/projects/dot-pacman/pacman-dotpad.png"
+  beforeLabel="검출 결과"
+  afterLabel="Dot Pad 렌더"
+  beforeAlt="팩맨 게임 화면. 유령 4마리와 팩맨에 검출 박스와 신뢰도(0.76~0.94)가 표시되어 있다."
+  afterAlt="같은 장면을 가상 Dot Pad로 렌더링한 흑백 핀 이미지. 미로 벽은 점선, 유령은 삼각형, 팩맨은 마름모 기호로 표현되어 있다."
+/>
+
+## 접근
+
+사람이 라벨링하는 대신 **게임 소스의 상태값에서 정답(code-derived GT)** 을 뽑아 YOLO를 학습했습니다.
+팩맨, 유령(일반/겁먹은 상태), 과일을 검출하고 28×30 미로 그리드를 복원해 60×40 핀으로 옮깁니다.
+
+## 한계
+
+실제 화면 캡처와의 도메인 차이는 아직 측정하지 않았습니다.

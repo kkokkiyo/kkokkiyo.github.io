@@ -1,0 +1,51 @@
+---
+import { getFeaturedProjects } from '../../data/featured';
+import Base from '../../layouts/Base.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
+import DotPad from '../../components/DotPad.astro';
+import ItemList from '../../components/ItemList.astro';
+import { SITE } from '../../consts';
+import { awards, certs } from '../../data/profile';
+
+const featured = await getFeaturedProjects();
+---
+
+<Base lang="en" title="English" description="Lee Dongchan — making visual content touchable with AI.">
+  <section class="grid items-center gap-10 py-12 md:grid-cols-2">
+    <div>
+      <p class="text-sm text-zinc-500">Computer Science, Hanyang University ERICA · Expected graduation Feb 2028</p>
+      <h1 class="mt-2 text-3xl font-bold leading-tight tracking-tight sm:text-4xl">
+        Hi, I'm Dongchan Lee.<br />
+        <span class="text-accent">I make visual content touchable with AI.</span>
+      </h1>
+      <p class="mt-4 text-zinc-600 dark:text-zinc-400">
+        I research how to bring webtoons, images and games to blind and low-vision people through a 60×40-pin refreshable tactile display (Dot Pad),
+        braille and speech — using computer vision, generative models and LLM agents.
+      </p>
+      <div class="mt-6 flex gap-3 text-sm">
+        <a href="/playground/" class="rounded-lg bg-accent px-4 py-2 font-medium text-white dark:text-zinc-950 hover:opacity-90">Try the Dot Pad playground</a>
+        <a href={`mailto:${SITE.email}`} class="rounded-lg border border-zinc-300 px-4 py-2 hover:border-accent dark:border-zinc-700">Contact</a>
+      </div>
+    </div>
+    <DotPad label="Pac-Man opening its mouth toward food pellets" caption="Dot Pad 60×40 pin simulation · Pac-Man" />
+  </section>
+
+  <section class="mt-12" aria-labelledby="featured">
+    <h2 id="featured" class="text-xl font-bold">Selected projects</h2>
+    <p class="mt-1 text-sm text-zinc-500">Project pages are written in Korean.</p>
+    <div class="mt-4 grid gap-4 sm:grid-cols-2">
+      {featured.map((p) => <ProjectCard project={p} lang="en" />)}
+    </div>
+  </section>
+
+  <section class="mt-16 grid gap-8 sm:grid-cols-2">
+    <div>
+      <h2 class="text-xl font-bold">Awards</h2>
+      <div class="mt-4"><ItemList items={awards} lang="en" /></div>
+    </div>
+    <div>
+      <h2 class="text-xl font-bold">Certifications & training</h2>
+      <div class="mt-4"><ItemList items={certs} lang="en" /></div>
+    </div>
+  </section>
+</Base>

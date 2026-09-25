@@ -1,0 +1,48 @@
+---
+import { getCollection, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Prose from '../../components/Prose.astro';
+import { mdxComponents } from '../../components/mdx';
+import Giscus from '../../components/Giscus.astro';
+
+export async function getStaticPaths() {
+  const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
+    (a, b) => a.data.date.valueOf() - b.data.date.valueOf(),
+  );
+  return posts.map((post) => ({
+    params: { slug: post.id },
+    props: { post, series: post.data.series ? posts.filter((p) => p.data.series === post.data.series) : [] },
+  }));
+}
+
+const { post, series } = Astro.props;
+const { Content } = await render(post);
+---
+
+<Base title={post.data.title} description={post.data.description} og={`blog/${post.id}`}>
+  <article class="py-8">
+    <time class="text-sm text-zinc-500" datetime={post.data.date.toISOString()}>
+      {post.data.date.toLocaleDateString('ko-KR')}
+    </time>
+    <h1 class="mt-1 text-3xl font-bold">{post.data.title}</h1>
+    {post.data.tags.length > 0 && <p class="mt-2 text-sm text-zinc-500">{post.data.tags.map((t) => `#${t}`).join(' ')}</p>}
+
+    {
+      series.length > 1 && (
+        <nav aria-label={`${post.data.series} 시리즈`} class="mt-6 rounded-xl bg-zinc-50 p-4 text-sm dark:bg-zinc-900">
+          <p class="font-semibold">시리즈 · {post.data.series}</p>
+          <ol class="mt-2 list-decimal pl-5">
+            {series.map((p) => (
+              <li>
+                {p.id === post.id ? <span aria-current="page" class="font-semibold">{p.data.title}</span> : <a href={`/blog/${p.id}/`} class="hover:text-accent">{p.data.title}</a>}
+              </li>
+            ))}
+          </ol>
+        </nav>
+      )
+    }
+
+    <div class="mt-10"><Prose><Content components={mdxComponents} /></Prose></div>
+  </article>
+  <Giscus />
+</Base>
