@@ -1,12 +1,12 @@
 {
   "title": "About",
   "description": "이동찬 소개",
-  "intro": "한양대학교 ERICA 컴퓨터학부 이동찬입니다. AI로 시각 콘텐츠를 만질 수 있게 만드는 개발자가 되고자 합니다.",
+  "intro": "한양대학교 ERICA 컴퓨터학부에 다니는 이동찬입니다. 눈으로만 볼 수 있던 것을 손으로도 읽을 수 있게 만드는 일을 하고 싶습니다.",
   "showGraduation": true,
-  "cvLinkLabel": "이력서 보기 · PDF 저장 →",
+  "cvLinkLabel": "이력서 보기 (PDF로 저장할 수 있어요)",
   "skillsTitle": "Skills",
   "awardsTitle": "수상",
-  "activitiesTitle": "대회·해커톤",
-  "certsTitle": "자격·교육",
+  "activitiesTitle": "대회와 해커톤",
+  "certsTitle": "자격증과 교육",
   "contactTitle": "Contact"
 }

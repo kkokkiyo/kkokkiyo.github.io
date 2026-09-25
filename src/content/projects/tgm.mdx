@@ -1,15 +1,15 @@
 ---
-title: TGM — Tactile Graphic Model
-summary: 자연 이미지를 Dot Pad 60×40 핀 촉각 그래픽으로 변환하는 생성 모델 연구
+title: TGM (Tactile Graphic Model)
+summary: 일반 사진을 Dot Pad 60×40 핀에 올릴 수 있는 촉각 그래픽으로 바꿔 주는 생성 모델을 연구하고 있습니다.
 period: "2026 –"
 category: accessibility
 stack: [PyTorch, Diffusers, Stable Diffusion 1.5, DreamBooth LoRA, FastAPI]
 highlights:
-  - TactileNet 방식을 재현해 66개 클래스별 LoRA 학습 파이프라인 구축
-  - 학습 → 추론 API → 웹 UI → Dot Pad hex 패킹까지 end-to-end
+  - TactileNet 방식을 따라 66개 클래스별 LoRA 학습 파이프라인을 만들었습니다.
+  - 학습부터 추론 API, 웹 화면, Dot Pad 출력 형식 변환까지 한 번에 이어지게 했습니다.
 role: 개인 연구
 status: ongoing
-titleEn: TGM — Tactile Graphic Model
+titleEn: TGM (Tactile Graphic Model)
 summaryEn: A generative pipeline that turns natural images into 60×40-pin tactile graphics for the Dot Pad using Stable Diffusion with per-class LoRA.
 order: 4
 ---
@@ -24,15 +24,12 @@ order: 4
   afterAlt="같은 돛단배를 필터링해 60×40 핀으로 변환한 흑백 미리보기. 돛 두 개와 선체가 굵은 픽셀 외곽선으로 표현되어 있다."
 />
 
-## 현재 단계
+## 지금까지 한 것
 
-[TactileNet](https://github.com/Adnan-Khan7/TactileNet)의 방법을 가져와 이미지를 촉각 라인아트로 바꾸고, 클래스별 LoRA를 학습했습니다.
-아직 정량 실험 전인 초기 단계입니다.
+[TactileNet](https://github.com/Adnan-Khan7/TactileNet)이 쓴 방법을 그대로 가져와서 이미지를 촉각 라인아트로 바꾸고, 클래스마다 LoRA를 학습했습니다. 아직 제대로 된 실험은 시작하지 않은 초기 단계입니다.
 
-## 관찰한 한계
+## 해 보면서 알게 된 것
 
-- 어댑터에 포함된 클래스는 잘 인식하고 생성하지만, **클래스 밖의 객체는 잘 그리지 못함**
-- 학습 데이터가 없거나 비슷한 군이 없으면 아예 생성에 실패
-- 일정 추론 스텝 범위를 벗어나면 이미지가 뭉개지거나 열화됨
+학습한 클래스에 들어 있는 물체는 잘 알아보고 잘 그립니다. 그런데 클래스 밖의 물체는 잘 못 그리고, 학습 데이터가 아예 없거나 비슷한 종류도 없으면 그리지 못하는 경우가 많았습니다. 추론 스텝을 일정 범위 밖으로 잡으면 그림이 뭉개지기도 했습니다.
 
-클래스 밖 객체를 어떻게 다룰지는 게임 접근성 프로젝트의 비전 문제와 함께 고민하고 있습니다.
+클래스 밖의 물체를 어떻게 다룰지는 게임 접근성 프로젝트의 화면 인식 문제와 같이 고민하고 있습니다. 둘 다 결국 비전 공부를 더 해야 풀릴 문제라고 보고 있습니다.

@@ -26,7 +26,7 @@ function pacman(): string[] {
   return rows;
 }
 
-const { pins = pacman(), label, caption = `Dot Pad 60×40 핀 시뮬레이션 · ${label}` } = Astro.props;
+const { pins = pacman(), label, caption = label } = Astro.props;
 ---
 
 <figure class="rounded-2xl bg-zinc-900 p-3 sm:p-5">

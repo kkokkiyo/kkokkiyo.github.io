@@ -24,7 +24,7 @@ const about = PAGES.about;
       <h1 class="text-3xl font-bold">{SITE.author} <span class="text-lg font-normal text-zinc-500">Lee Dongchan</span></h1>
       <p class="mt-1">{SITE.tagline}</p>
       <p class="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
-        {SITE.affiliation} · {graduation} · {SITE.email} · {SITE.github.replace('https://', '')} · {site}
+        {[SITE.affiliation, graduation, SITE.email, SITE.github.replace('https://', ''), site].filter(Boolean).join(', ')}
       </p>
     </header>
 
@@ -43,7 +43,7 @@ const about = PAGES.about;
               </div>
               <p class="text-sm">{data.summary}</p>
               <p class="text-sm text-zinc-600 dark:text-zinc-400">
-                {[data.award && `수상: ${data.award}`, data.role && `역할: ${data.role}`, ...(data.award ? [] : data.highlights.slice(0, 1))].filter(Boolean).join(' · ')}
+                {[data.award && `수상: ${data.award}`, data.role && `역할: ${data.role}`, ...(data.award ? [] : data.highlights.slice(0, 1))].filter(Boolean).join(', ')}
               </p>
             </li>
           ))

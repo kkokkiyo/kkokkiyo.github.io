@@ -1,4 +1,4 @@
-// profile.json을 About·CV·영어 페이지에서 쓰는 형태로 변환
+// profile.json을 About, CV, 영어 페이지에서 쓰는 형태로 변환
 import profile from './profile.json';
 
 export type Item = { date?: string; name: string; nameEn?: string; note?: string };

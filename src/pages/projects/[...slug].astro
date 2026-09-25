@@ -25,7 +25,7 @@ const renderedLogs = await Promise.all(logs.map(async (log) => ({ log, Body: (aw
 
 <Base title={data.title} description={data.summary} og={`projects/${project.id}`}>
   <article class="py-8">
-    <p class="text-sm text-zinc-500">{CATEGORIES[data.category]} · {data.period}</p>
+    <p class="flex gap-3 text-sm text-zinc-500"><span>{CATEGORIES[data.category]}</span><span>{data.period}</span></p>
     <h1 class="mt-1 text-3xl font-bold">{data.title}</h1>
     <div class="mt-3"><Badges badges={projectBadges(project)} /></div>
     <p class="mt-3 text-lg text-zinc-600 dark:text-zinc-400">{data.summary}</p>
@@ -35,7 +35,7 @@ const renderedLogs = await Promise.all(logs.map(async (log) => ({ log, Body: (aw
       {data.award && (<><dt class="font-semibold">수상</dt><dd>{data.award}</dd></>)}
       {data.role && (<><dt class="font-semibold">역할</dt><dd>{data.role}</dd></>)}
       <dt class="font-semibold">기술</dt>
-      <dd>{data.stack.join(' · ')}</dd>
+      <dd>{data.stack.join(', ')}</dd>
       {data.highlights.length > 0 && (
         <>
           <dt class="font-semibold">성과</dt>

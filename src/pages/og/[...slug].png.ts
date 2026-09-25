@@ -20,7 +20,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
   return [
     { params: { slug: 'default' }, props: { title: SITE.tagline, kicker: SITE.affiliation } },
     { params: { slug: 'research' }, props: { title: 'Dot Pad 기반 콘텐츠 접근성 연구', kicker: 'Research' } },
-    { params: { slug: 'playground' }, props: { title: '이미지를 60×40 촉각 핀으로 바꿔 보세요', kicker: 'Dot Pad Playground' } },
+    { params: { slug: 'playground' }, props: { title: '팩맨을 60×40 핀으로 옮겨 봤습니다', kicker: 'Dot Pad 팩맨' } },
     ...projects.map((p) => ({ params: { slug: `projects/${p.id}` }, props: { title: p.data.title, kicker: p.data.award || 'Project' } })),
     ...posts.map((p) => ({ params: { slug: `blog/${p.id}` }, props: { title: p.data.title, kicker: p.data.series || 'Blog' } })),
   ];
@@ -38,7 +38,7 @@ export const GET: APIRoute = async ({ props }) => {
       h('div', { display: 'flex', flexDirection: 'column', justifyContent: 'space-between', flex: 1, paddingRight: 48 }, [
         h('div', { fontSize: 30, color: '#60a5fa' }, kicker),
         h('div', { fontSize: title.length > 24 ? 60 : 72, fontWeight: 700, lineHeight: 1.2, wordBreak: 'keep-all' }, title),
-        h('div', { fontSize: 28, color: '#a1a1aa' }, `${SITE.author} · kkokkiyo.github.io`),
+        h('div', { fontSize: 28, color: '#a1a1aa' }, `${SITE.author}   kkokkiyo.github.io`),
       ]),
       h('div', { display: 'flex', flexWrap: 'wrap', width: 300, alignContent: 'center', gap: 14 },
         pins.map((p) => h('div', { width: 22, height: 22, borderRadius: 11, background: p.on ? '#fafafa' : '#3f3f46' })),

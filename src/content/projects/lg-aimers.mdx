@@ -1,24 +1,24 @@
 ---
 title: LG Aimers 8기 모델 경량화
-summary: EXAONE 모델을 FP8·KV 캐시 양자화와 캘리브레이션 데이터 설계로 경량화하면서 일반화 성능을 유지한 대회 프로젝트
+summary: EXAONE 모델을 FP8과 KV 캐시 양자화로 가볍게 만들면서 성능은 떨어지지 않게 캘리브레이션 데이터를 다듬은 대회였습니다.
 period: "2026.03 – 2026.04"
 category: ai
 stack: [EXAONE, FP8 양자화, KV Cache 양자화, LoRA, QLoRA, SFT]
 highlights:
-  - DACON Private 리더보드 최종 3위, 발표 기회 획득
-  - 팀장으로 LoRA·QLoRA·SFT·캘리브레이션 실험을 분담하고 결과를 통합
+  - DACON Private 리더보드 최종 3위로 발표 기회를 얻었습니다.
+  - 팀장으로 실험을 나눠 맡기고 결과를 하나로 합쳤습니다.
 role: 팀장
-titleEn: LG Aimers 8th — Model Compression
+titleEn: "LG Aimers 8th: Model Compression"
 summaryEn: Compressed EXAONE with FP8 weights and KV-cache quantization plus a carefully designed calibration set, finishing 3rd on the private leaderboard as team leader.
 order: 3
 ---
 
-## 접근
+## 무엇을 했나
 
-- **FP8 가중치 + KV 캐시 양자화**로 추론 시 메모리 부담 감소
-- 캘리브레이션 데이터셋을 **셔플해 평탄화한 뒤 청크 단위로 분할**. 청크는 단어 단위로 끊어 단어가 잘리지 않게 함
-- 아웃라이어를 평탄화해 양자화 후에도 일반화 성능 유지
+가중치를 FP8로 줄이고 KV 캐시도 양자화해서 추론할 때 드는 메모리를 줄였습니다. 문제는 양자화하면 점수가 떨어진다는 것이었는데, 캘리브레이션 데이터를 어떻게 넣느냐에 따라 차이가 꽤 났습니다.
 
-## 팀 운영
+그래서 데이터셋을 섞어서 고르게 만든 뒤 청크로 잘라 넣었습니다. 청크는 단어 단위로 끊어서 단어가 중간에 잘리지 않게 했습니다. 튀는 값이 줄어드니 양자화한 뒤에도 성능이 비교적 잘 유지됐습니다.
 
-팀원들에게 LoRA, QLoRA, SFT, 캘리브레이션 데이터셋 비교 실험을 나눠 맡기고, 점수가 좋은 설정을 조합해 최종 제출안을 만들었습니다.
+## 팀을 어떻게 굴렸나
+
+팀원마다 LoRA, QLoRA, SFT, 캘리브레이션 데이터셋 비교를 하나씩 맡겼고, 저는 점수가 잘 나온 설정을 모아 최종 제출안으로 조합했습니다. 솔직히 말하면 이론보다는 여러 번 시도해 보면서 찾은 조합에 가깝습니다.

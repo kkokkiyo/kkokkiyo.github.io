@@ -7,7 +7,7 @@ const projects = defineCollection({
   schema: z.object({
     title: z.string(),
     summary: z.string(),
-    // 영어 페이지용 제목·요약
+    // 영어 페이지용 제목과 요약
     titleEn: z.string().nullish(),
     summaryEn: z.string().nullish(),
     period: z.string(),

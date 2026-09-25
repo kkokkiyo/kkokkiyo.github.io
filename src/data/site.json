@@ -2,7 +2,7 @@
   "title": "Lee Dongchan",
   "author": "이동찬",
   "tagline": "AI로 시각 콘텐츠를 만질 수 있게 만드는 개발자",
-  "description": "AI로 시각 콘텐츠를 만질 수 있게 만드는 개발자, 이동찬의 포트폴리오와 블로그",
+  "description": "시각 콘텐츠를 손으로 만질 수 있게 만드는 연구를 하는 이동찬의 포트폴리오와 블로그",
   "affiliation": "한양대학교 ERICA 컴퓨터학부",
   "email": "dear0923@hanyang.ac.kr",
   "github": "https://github.com/kkokkiyo",
@@ -47,9 +47,9 @@
     }
   ],
   "categories": {
-    "accessibility": "접근성·촉각",
-    "ai": "AI/ML·대회",
-    "systems": "시스템·XR",
+    "accessibility": "접근성",
+    "ai": "AI와 대회",
+    "systems": "XR과 하드웨어",
     "course": "수업"
   },
   "giscus": {

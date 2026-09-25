@@ -1,14 +1,16 @@
 ---
 title: 119 신고 대화 증상 분류 (DCC 2026)
-summary: 119 신고 대화에서 환자 증상을 다중 라벨로 분류하는 한국어 NLP 과제
+summary: 119 신고 전화 녹취에서 환자 증상을 여러 개씩 골라내는 한국어 분류 모델을 만들었습니다.
 period: "2026.09"
 category: ai
 stack: [KLUE-RoBERTa, LoRA, Qwen2.5 QLoRA, scikit-learn]
 highlights:
-  - Macro F1 0.4716(TF-IDF) → 0.5254(KLUE-RoBERTa), 앙상블 0.5279
-  - paired bootstrap 95% CI로 개선 유의성 검증
+  - Macro F1을 TF-IDF 0.4716에서 KLUE-RoBERTa 0.5254까지 올렸고, 앙상블로 0.5279를 얻었습니다.
+  - 개선 폭이 우연이 아닌지 paired bootstrap 95% 신뢰구간으로 확인했습니다.
 role: 개인
 order: 10
 ---
 
-학습 127,178건 규모에서 v6~v18까지 실험을 기록하며, 데이터 누수 점검과 threshold calibration, 중첩 CV로 결과를 검증했습니다.
+학습 데이터는 12만 7천 건 정도였습니다. v6부터 v18까지 실험을 하나씩 기록하면서 돌렸고, 점수가 올랐을 때마다 데이터가 새지 않았는지 먼저 의심했습니다. 임계값은 검증 세트로 따로 맞췄고, 최종 비교는 중첩 교차검증으로 했습니다.
+
+점수 차이가 크지 않은 대회라서, 숫자 하나 올리는 것보다 그 숫자를 믿어도 되는지 확인하는 데 시간을 더 썼던 프로젝트입니다.

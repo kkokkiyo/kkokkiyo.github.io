@@ -87,9 +87,9 @@ const t =
     <main id="main" class="mx-auto max-w-4xl px-4 pb-24" data-pagefind-body>
       <slot />
     </main>
-    <footer class="no-print mx-auto max-w-4xl border-t border-zinc-200 px-4 py-8 text-sm text-zinc-500 dark:border-zinc-800">
-      © {new Date().getFullYear()} {SITE.author}
-      {FOOTER_LINKS.map((l) => <> · <a class="hover:text-accent" href={l.href}>{l.label}</a></>)}
+    <footer class="no-print mx-auto flex max-w-4xl flex-wrap gap-x-5 gap-y-2 border-t border-zinc-200 px-4 py-8 text-sm text-zinc-500 dark:border-zinc-800">
+      <span>© {new Date().getFullYear()} {SITE.author}</span>
+      {FOOTER_LINKS.map((l) => <a class="hover:text-accent" href={l.href}>{l.label}</a>)}
     </footer>
   </body>
 </html>

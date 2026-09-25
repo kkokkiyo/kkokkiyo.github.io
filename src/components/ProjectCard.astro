@@ -32,7 +32,7 @@ const summary = lang === 'en' ? (data.summaryEn || data.summary) : data.summary;
       />
     )
   }
-  <p class="text-xs text-zinc-500">{lang === 'ko' && `${CATEGORIES[data.category]} · `}{data.period}</p>
+  <p class="flex gap-3 text-xs text-zinc-500">{lang === 'ko' && <span>{CATEGORIES[data.category]}</span>}<span>{data.period}</span></p>
   <h3 class="mt-1 text-lg font-semibold group-hover:text-accent">
     <a href={`/projects/${id}/`} class="after:absolute after:inset-0">{title}</a>
   </h3>

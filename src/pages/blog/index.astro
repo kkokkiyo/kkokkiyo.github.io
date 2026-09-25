@@ -19,7 +19,7 @@ const series = [...new Set(posts.map((p) => p.data.series).filter(Boolean))] as 
   {
     series.length > 0 && (
       <p class="mb-8 text-sm text-zinc-500">
-        시리즈: {series.map((s, i) => <>{i > 0 && ' · '}<span class="font-medium text-zinc-700 dark:text-zinc-300">{s}</span></>)}
+        시리즈: {series.map((s, i) => <>{i > 0 && ', '}<span class="font-medium text-zinc-700 dark:text-zinc-300">{s}</span></>)}
       </p>
     )
   }
@@ -29,7 +29,7 @@ const series = [...new Set(posts.map((p) => p.data.series).filter(Boolean))] as 
         <li>
           <p class="text-sm text-zinc-500">
             <time datetime={post.data.date.toISOString()}>{post.data.date.toLocaleDateString('ko-KR')}</time>
-            {post.data.series && <> · {post.data.series}</>}
+            {post.data.series && <span class="ml-3">{post.data.series}</span>}
           </p>
           <h2 class="text-xl font-semibold">
             <a href={`/blog/${post.id}/`} class="hover:text-accent">{post.data.title}</a>

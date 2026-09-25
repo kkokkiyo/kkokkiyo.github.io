@@ -33,7 +33,7 @@ const { Content } = await render(post);
     {
       series.length > 1 && (
         <nav aria-label={`${post.data.series} 시리즈`} class="mt-6 rounded-xl bg-zinc-50 p-4 text-sm dark:bg-zinc-900">
-          <p class="font-semibold">시리즈 · {post.data.series}</p>
+          <p class="font-semibold">{post.data.series} 시리즈</p>
           <ol class="mt-2 list-decimal pl-5">
             {series.map((p) => (
               <li>

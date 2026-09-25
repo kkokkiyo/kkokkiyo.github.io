@@ -1,10 +1,10 @@
 ---
 title: MIPS 어셈블리로 구현한 신경망 순전파
-summary: 행렬곱, bias, ReLU로 구성된 2층 신경망 순전파를 MIPS 어셈블리로 직접 구현
+summary: 행렬곱, bias, ReLU로 이루어진 2층 신경망의 순전파를 MIPS 어셈블리로 직접 짰습니다.
 period: "2026.05 – 2026.06"
 category: course
 stack: [MIPS Assembly, MARS]
 order: 20
 ---
 
-H = ReLU(X·W1 + B1), Y = ReLU(H·W2 + B2)를 힙에 할당한 행렬 구조체로 계산합니다. 컴퓨터구조 수업 과제.
+컴퓨터구조 수업 과제로, H = ReLU(X·W1 + B1)와 Y = ReLU(H·W2 + B2)를 힙에 잡은 행렬 구조체로 계산합니다. 파이썬에서 한 줄이면 끝나는 연산을 레지스터와 메모리 주소로 풀어 쓰면서, 행렬곱이 실제로 얼마나 많은 반복인지 몸으로 느꼈습니다.
