@@ -1,60 +1,68 @@
 ---
+import { getCollection, getEntry } from 'astro:content';
 import { getFeaturedProjects } from '../data/featured';
-import { getCollection } from 'astro:content';
+import { PAGES } from '../data/pages';
+import { inline } from '../data/inline';
 import Base from '../layouts/Base.astro';
 import ProjectCard from '../components/ProjectCard.astro';
 import DotPad from '../components/DotPad.astro';
-import { SITE } from '../consts';
+import Buttons from '../components/Buttons.astro';
 
+const home = PAGES.home;
 const featured = await getFeaturedProjects();
-const posts = (await getCollection('blog', ({ data }) => !data.draft))
-  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
-  .slice(0, 3);
+const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+const logs = (await getCollection('logs')).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+const logRows = await Promise.all(logs.map(async (l) => ({ log: l, project: await getEntry(l.data.project) })));
+const date = (d: Date) => d.toLocaleDateString('ko-KR');
 ---
 
 <Base>
-  <section class="grid items-center gap-10 py-12 md:grid-cols-2">
+  <section class:list={['grid items-center gap-10 py-12', home.showDotPad && 'md:grid-cols-2']}>
     <div>
-      <p class="text-sm text-zinc-500">{SITE.affiliation}</p>
+      <p class="text-sm text-zinc-500">{home.kicker}</p>
       <h1 class="mt-2 text-3xl font-bold leading-tight tracking-tight sm:text-4xl">
-        안녕하세요, 이동찬입니다.<br />
-        <span class="text-accent">{SITE.tagline}</span>
+        {home.greeting}<br />
+        <span class="text-accent">{home.headline}</span>
       </h1>
-      <p class="mt-4 text-zinc-600 dark:text-zinc-400">
-        웹툰, 이미지, 게임처럼 눈으로만 즐기던 콘텐츠를 촉각 디스플레이(Dot Pad)와 점자·음성으로 옮기는 연구를 하고 있습니다. 컴퓨터 비전,
-        생성 모델, LLM 에이전트를 도구로 씁니다.
-      </p>
-      <div class="mt-6 flex gap-3 text-sm">
-        <a href="/projects/" class="rounded-lg bg-accent px-4 py-2 font-medium text-white dark:text-zinc-950 hover:opacity-90">프로젝트 보기</a>
-        <a href="/playground/" class="rounded-lg border border-zinc-300 px-4 py-2 hover:border-accent dark:border-zinc-700">촉각 변환 체험</a>
-        <a href="/cv/" class="rounded-lg border border-zinc-300 px-4 py-2 hover:border-accent dark:border-zinc-700">이력서</a>
-      </div>
+      <p class="mt-4 text-zinc-600 dark:text-zinc-400" set:html={inline(home.intro)} />
+      <Buttons buttons={home.buttons} />
     </div>
-    <DotPad label="팩맨이 먹이 점을 향해 입을 벌린 모습" />
-  </section>
-
-  <section class="mt-12" aria-labelledby="featured">
-    <h2 id="featured" class="text-xl font-bold">대표 프로젝트</h2>
-    <div class="mt-4 grid gap-4 sm:grid-cols-2">
-      {featured.map((p) => <ProjectCard project={p} />)}
-    </div>
+    {home.showDotPad && <DotPad label={home.dotPadLabel} />}
   </section>
 
   {
-    posts.length > 0 && (
-      <section class="mt-16" aria-labelledby="recent">
-        <h2 id="recent" class="text-xl font-bold">최근 글</h2>
-        <ul class="mt-4 divide-y divide-zinc-200 dark:divide-zinc-800">
-          {posts.map((post) => (
-            <li class="py-3">
-              <a href={`/blog/${post.id}/`} class="hover:text-accent">{post.data.title}</a>
-              <time class="ml-2 text-sm text-zinc-500" datetime={post.data.date.toISOString()}>
-                {post.data.date.toLocaleDateString('ko-KR')}
-              </time>
-            </li>
-          ))}
-        </ul>
-      </section>
-    )
+    home.sections.map((section, i) => {
+      const id = `section-${i}`;
+      if (section.type === 'featured')
+        return (
+          featured.length > 0 && (
+            <section class="mt-12" aria-labelledby={id}>
+              <h2 id={id} class="text-xl font-bold">{section.title}</h2>
+              <div class="mt-4 grid gap-4 sm:grid-cols-2">
+                {featured.slice(0, section.count ?? featured.length).map((p) => <ProjectCard project={p} />)}
+              </div>
+            </section>
+          )
+        );
+      const items =
+        section.type === 'posts'
+          ? posts.map((p) => ({ href: `/blog/${p.id}/`, title: p.data.title, date: p.data.date }))
+          : logRows.map(({ log, project }) => ({ href: `/projects/${project?.id}/`, title: log.data.title, date: log.data.date }));
+      return (
+        items.length > 0 && (
+          <section class="mt-16" aria-labelledby={id}>
+            <h2 id={id} class="text-xl font-bold">{section.title}</h2>
+            <ul class="mt-4 divide-y divide-zinc-200 dark:divide-zinc-800">
+              {items.slice(0, section.count ?? 3).map((item) => (
+                <li class="py-3">
+                  <a href={item.href} class="hover:text-accent">{item.title}</a>
+                  <time class="ml-2 text-sm text-zinc-500" datetime={item.date.toISOString()}>{date(item.date)}</time>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )
+      );
+    })
   }
 </Base>

@@ -1,0 +1,26 @@
+{
+  "title": "English",
+  "description": "Lee Dongchan — making visual content touchable with AI.",
+  "kicker": "Computer Science, Hanyang University ERICA · Expected graduation Feb 2028",
+  "greeting": "Hi, I'm Dongchan Lee.",
+  "headline": "I make visual content touchable with AI.",
+  "intro": "I research how to bring webtoons, images and games to blind and low-vision people through a 60×40-pin refreshable tactile display (Dot Pad), braille and speech — using computer vision, generative models and LLM agents.",
+  "buttons": [
+    {
+      "label": "Try the Dot Pad playground",
+      "href": "/playground/",
+      "primary": true
+    },
+    {
+      "label": "Contact",
+      "href": "mailto:dear0923@hanyang.ac.kr",
+      "primary": false
+    }
+  ],
+  "dotPadLabel": "Pac-Man opening its mouth toward food pellets",
+  "dotPadCaption": "Dot Pad 60×40 pin simulation · Pac-Man",
+  "featuredTitle": "Selected projects",
+  "featuredNote": "Project pages are written in Korean.",
+  "awardsTitle": "Awards",
+  "certsTitle": "Certifications & training"
+}

@@ -1,11 +1,14 @@
 ---
 import Base from '../layouts/Base.astro';
+import { PAGES } from '../data/pages';
+
+const page = PAGES.search;
 ---
 
-<Base title="검색" description="사이트 내 검색">
-  <h1 class="py-8 text-3xl font-bold">검색</h1>
+<Base title={page.title} description={page.description}>
+  <h1 class="py-8 text-3xl font-bold">{page.title}</h1>
   <link href="/pagefind/pagefind-ui.css" rel="stylesheet" />
-  <div id="search"></div>
+  <div id="search" data-placeholder={page.placeholder} data-empty={page.empty}></div>
   <noscript>검색은 자바스크립트가 필요합니다.</noscript>
   <p id="search-dev" class="hidden text-sm text-zinc-500">검색 색인은 <code>npm run build</code> 후에 만들어집니다. 개발 서버에서는 동작하지 않아요.</p>
 </Base>
@@ -17,7 +20,7 @@ import Base from '../layouts/Base.astro';
     new PagefindUI({
       element: '#search',
       showSubResults: true,
-      translations: { placeholder: '프로젝트, 글 검색', zero_results: '"[SEARCH_TERM]"에 대한 결과가 없어요.' },
+      translations: { placeholder: document.getElementById('search').dataset.placeholder, zero_results: document.getElementById('search').dataset.empty },
     });
   s.onerror = () => document.getElementById('search-dev').classList.remove('hidden');
   document.head.append(s);

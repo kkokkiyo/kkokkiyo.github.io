@@ -13,4 +13,5 @@ export default defineConfig({
   site: 'https://kkokkiyo.github.io',
   integrations: [mdx(), sitemap(), ...localIntegrations],
   vite: { plugins: [tailwindcss()] },
+  devToolbar: { enabled: false },
 });

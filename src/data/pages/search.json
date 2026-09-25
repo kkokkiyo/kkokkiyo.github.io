@@ -1,0 +1,6 @@
+{
+  "title": "검색",
+  "description": "사이트 내 검색",
+  "placeholder": "프로젝트, 글 검색",
+  "empty": "\"[SEARCH_TERM]\"에 대한 결과가 없어요."
+}

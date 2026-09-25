@@ -1,63 +1,74 @@
 ---
+import { getCollection, getEntry, render } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import Prose from '../components/Prose.astro';
-import { getCollection, getEntry } from 'astro:content';
+import { mdxComponents } from '../components/mdx';
 
-const logs = (await getCollection('logs')).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf()).slice(0, 8);
-const logRows = await Promise.all(logs.map(async (l) => ({ log: l, project: (await getEntry(l.data.project))! })));
+type TimelineItem = { period: string; title: string; body?: string | null; project?: string | null };
+type Paper = { title: string; href: string; note?: string | null };
 
-const timeline = [
-  { period: '2025.08 – 2025.11', title: '웹툰 촉각화', body: '웹툰 컷을 촉각 그래픽, OCR, TTS로 변환하는 팀 프로젝트. 사용자 연구까지 진행.', href: '/projects/dot-webtoon/' },
-  { period: '2026.06', title: '웹툰 레이어 분리 실험', body: '인물·소품·배경을 YOLO/SAM으로 분리해 60×40 그리드에서 읽기 쉬운 구성을 비교.', href: '/projects/dot-webtoon/' },
-  { period: '2026', title: '이미지 → 촉각 그래픽 생성', body: 'Stable Diffusion + 클래스별 LoRA로 자연 이미지를 촉각 라인아트로 생성.', href: '/projects/tgm/' },
-  { period: '2026.08 – 09', title: '게임 접근성 프레임워크', body: '화면·로그·어댑터를 통합 GameState로 만들어 촉각 탐색과 점자/음성 질의를 지원.', href: '/projects/tactile-game-agent/' },
-  { period: '2026.09', title: '실시간 게임 촉각화', body: '팩맨 객체 검출과 미로 복원으로 실시간 Dot Pad 렌더링.', href: '/projects/dot-pacman/' },
-];
+const page = (await getEntry('pages', 'research'))!;
+const data = page.data as typeof page.data & {
+  timeline?: TimelineItem[];
+  logsTitle?: string;
+  logsCount?: number;
+  papersTitle?: string;
+  papers?: Paper[];
+};
+const { Content } = await render(page);
+
+const logs = (await getCollection('logs')).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf()).slice(0, data.logsCount ?? 8);
+const logRows = await Promise.all(logs.map(async (l) => ({ log: l, project: await getEntry(l.data.project) })));
 ---
 
-<Base title="Research" description="Dot Pad 기반 시각장애인 콘텐츠 접근성 연구" og="research">
-  <h1 class="py-8 text-3xl font-bold">Research</h1>
-  <Prose>
-    <p>
-      시각장애인은 화면을 읽어 주는 스크린 리더로 텍스트에는 접근할 수 있지만, 웹툰의 그림, 게임 화면, 사진처럼 <strong>공간 정보가 핵심인 콘텐츠</strong>에는
-      여전히 접근하기 어렵습니다. 저는 60×40 핀 촉각 디스플레이 <strong>Dot Pad</strong>에 이런 콘텐츠를 옮기는 방법을 연구합니다.
-    </p>
-    <p>핵심 질문: 적은 해상도(2,400핀) 안에서 <em>무엇을 남기고 무엇을 버려야</em> 손끝으로 이해할 수 있을까?</p>
-  </Prose>
+<Base title={data.title} description={data.description ?? undefined} og="research">
+  <h1 class="py-8 text-3xl font-bold">{data.title}</h1>
+  <Prose><Content components={mdxComponents} /></Prose>
 
-  <ol class="mt-10 border-l-2 border-zinc-200 dark:border-zinc-800">
-    {
-      timeline.map((t) => (
-        <li class="relative mb-8 pl-6">
-          <span class="absolute -left-[7px] top-1.5 size-3 rounded-full bg-accent" aria-hidden="true" />
-          <p class="text-sm text-zinc-500">{t.period}</p>
-          <h2 class="font-semibold"><a href={t.href} class="hover:text-accent">{t.title}</a></h2>
-          <p class="text-sm text-zinc-600 dark:text-zinc-400">{t.body}</p>
-        </li>
-      ))
-    }
-  </ol>
-
-  <section class="mt-16" aria-labelledby="log-heading">
-    <h2 id="log-heading" class="text-xl font-bold">최근 연구 로그</h2>
-    <ul class="mt-4 divide-y divide-zinc-200 dark:divide-zinc-800">
-      {
-        logRows.map(({ log, project }) => (
-          <li class="flex flex-wrap gap-x-4 py-3">
-            <time class="w-24 shrink-0 text-sm text-zinc-500" datetime={log.data.date.toISOString()}>{log.data.date.toLocaleDateString('ko-KR')}</time>
-            <span class="flex-1">
-              {log.data.title} <a href={`/projects/${project.id}/`} class="text-sm text-accent hover:underline">{project.data.title}</a>
-            </span>
+  {
+    (data.timeline ?? []).length > 0 && (
+      <ol class="mt-10 border-l-2 border-zinc-200 dark:border-zinc-800">
+        {data.timeline!.map((t) => (
+          <li class="relative mb-8 pl-6">
+            <span class="absolute -left-[7px] top-1.5 size-3 rounded-full bg-accent" aria-hidden="true" />
+            <p class="text-sm text-zinc-500">{t.period}</p>
+            <h2 class="font-semibold">{t.project ? <a href={`/projects/${t.project}/`} class="hover:text-accent">{t.title}</a> : t.title}</h2>
+            {t.body && <p class="text-sm text-zinc-600 dark:text-zinc-400">{t.body}</p>}
           </li>
-        ))
-      }
-    </ul>
-  </section>
+        ))}
+      </ol>
+    )
+  }
 
-  <section class="mt-16" aria-labelledby="papers-heading">
-    <h2 id="papers-heading" class="text-xl font-bold">읽고 있는 논문</h2>
-    <p class="mt-2 text-zinc-600 dark:text-zinc-400">
-      <a href="/blog/rtd-video-papers/" class="text-accent underline">촉각 디스플레이와 동영상 접근성 논문 정리</a>: ASSETS, CHI, UIST에서 나온 선행 연구 노트
-    </p>
-  </section>
+  {
+    logRows.length > 0 && (
+      <section class="mt-16" aria-labelledby="log-heading">
+        <h2 id="log-heading" class="text-xl font-bold">{data.logsTitle}</h2>
+        <ul class="mt-4 divide-y divide-zinc-200 dark:divide-zinc-800">
+          {logRows.map(({ log, project }) => (
+            <li class="flex flex-wrap gap-x-4 py-3">
+              <time class="w-24 shrink-0 text-sm text-zinc-500" datetime={log.data.date.toISOString()}>{log.data.date.toLocaleDateString('ko-KR')}</time>
+              <span class="flex-1">
+                {log.data.title} {project && <a href={`/projects/${project.id}/`} class="text-sm text-accent hover:underline">{project.data.title}</a>}
+              </span>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
+
+  {
+    (data.papers ?? []).length > 0 && (
+      <section class="mt-16" aria-labelledby="papers-heading">
+        <h2 id="papers-heading" class="text-xl font-bold">{data.papersTitle}</h2>
+        {data.papers!.map((p) => (
+          <p class="mt-2 text-zinc-600 dark:text-zinc-400">
+            <a href={p.href} class="text-accent underline">{p.title}</a>
+            {p.note && `: ${p.note}`}
+          </p>
+        ))}
+      </section>
+    )
+  }
 </Base>

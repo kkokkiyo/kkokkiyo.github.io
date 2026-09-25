@@ -1,0 +1,62 @@
+{
+  "title": "Lee Dongchan",
+  "author": "이동찬",
+  "tagline": "AI로 시각 콘텐츠를 만질 수 있게 만드는 개발자",
+  "description": "AI로 시각 콘텐츠를 만질 수 있게 만드는 개발자, 이동찬의 포트폴리오와 블로그",
+  "affiliation": "한양대학교 ERICA 컴퓨터학부",
+  "email": "dear0923@hanyang.ac.kr",
+  "github": "https://github.com/kkokkiyo",
+  "nav": [
+    {
+      "label": "Projects",
+      "href": "/projects/"
+    },
+    {
+      "label": "Research",
+      "href": "/research/"
+    },
+    {
+      "label": "Playground",
+      "href": "/playground/"
+    },
+    {
+      "label": "Blog",
+      "href": "/blog/"
+    },
+    {
+      "label": "About",
+      "href": "/about/"
+    }
+  ],
+  "footerLinks": [
+    {
+      "label": "GitHub",
+      "href": "https://github.com/kkokkiyo"
+    },
+    {
+      "label": "Email",
+      "href": "mailto:dear0923@hanyang.ac.kr"
+    },
+    {
+      "label": "RSS",
+      "href": "/rss.xml"
+    },
+    {
+      "label": "접근성",
+      "href": "/accessibility/"
+    }
+  ],
+  "categories": {
+    "accessibility": "접근성·촉각",
+    "ai": "AI/ML·대회",
+    "systems": "시스템·XR",
+    "course": "수업"
+  },
+  "giscus": {
+    "repo": "kkokkiyo/kkokkiyo.github.io",
+    "repoId": "R_kgDOUrjVYw",
+    "category": "Announcements",
+    "categoryId": "DIC_kwDOUrjVY84DGYjM"
+  },
+  "goatcounter": "kkokkiyo"
+}

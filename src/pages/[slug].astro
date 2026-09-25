@@ -1,0 +1,21 @@
+---
+// 관리 화면에서 추가한 페이지 (/<주소>/)
+import { getCollection, render } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import Prose from '../components/Prose.astro';
+import { mdxComponents } from '../components/mdx';
+
+export async function getStaticPaths() {
+  const RESERVED = ['projects', 'research', 'playground', 'blog', 'about', 'cv', 'en', 'search', 'accessibility', 'og', 'rss.xml', '404'];
+  const pages = await getCollection('custom', ({ id, data }) => !data.draft && !RESERVED.includes(id));
+  return pages.map((page) => ({ params: { slug: page.id }, props: { page } }));
+}
+
+const { page } = Astro.props;
+const { Content } = await render(page);
+---
+
+<Base title={page.data.title} description={page.data.description ?? undefined}>
+  <h1 class="py-8 text-3xl font-bold">{page.data.title}</h1>
+  <Prose><Content components={mdxComponents} /></Prose>
+</Base>

@@ -4,6 +4,8 @@ import Base from '../../layouts/Base.astro';
 import Prose from '../../components/Prose.astro';
 import { mdxComponents } from '../../components/mdx';
 import Giscus from '../../components/Giscus.astro';
+import { Image } from 'astro:assets';
+import { resolveImage } from '../../data/images';
 
 export async function getStaticPaths() {
   const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
@@ -26,6 +28,7 @@ const { Content } = await render(post);
     </time>
     <h1 class="mt-1 text-3xl font-bold">{post.data.title}</h1>
     {post.data.tags.length > 0 && <p class="mt-2 text-sm text-zinc-500">{post.data.tags.map((t) => `#${t}`).join(' ')}</p>}
+    {post.data.cover && <Image src={resolveImage(post.data.cover)} alt={post.data.coverAlt ?? ''} widths={[640, 1280]} sizes="(max-width: 896px) 100vw, 896px" class="mt-6 w-full rounded-xl" />}
 
     {
       series.length > 1 && (

@@ -3,16 +3,19 @@ import { getCollection } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import ProjectCard from '../../components/ProjectCard.astro';
 import { CATEGORIES } from '../../consts';
+import { PAGES } from '../../data/pages';
+
+const page = PAGES.projects;
 
 const projects = (await getCollection('projects', ({ data }) => !data.draft)).sort(
   (a, b) => a.data.order - b.data.order,
 );
 ---
 
-<Base title="Projects" description="이동찬의 프로젝트 모음">
-  <h1 class="py-8 text-3xl font-bold">Projects</h1>
+<Base title={page.title} description={page.description}>
+  <h1 class="py-8 text-3xl font-bold">{page.title}</h1>
   <div class="mb-6 flex flex-wrap gap-2 text-sm" role="group" aria-label="분류 필터">
-    <button type="button" data-filter="all" aria-pressed="true" class="filter">전체</button>
+    <button type="button" data-filter="all" aria-pressed="true" class="filter">{page.allLabel}</button>
     {
       Object.entries(CATEGORIES).map(([key, label]) => (
         <button type="button" data-filter={key} aria-pressed="false" class="filter">

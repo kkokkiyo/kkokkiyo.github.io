@@ -4,16 +4,19 @@ import { getFeaturedProjects } from '../data/featured';
 import Base from '../layouts/Base.astro';
 import ItemList from '../components/ItemList.astro';
 import { SITE } from '../consts';
+import { PAGES } from '../data/pages';
 import { skills, awards, activities, certs, graduation } from '../data/profile';
 
 const projects = await getFeaturedProjects();
 const site = Astro.site!.host;
+const page = PAGES.cv;
+const about = PAGES.about;
 ---
 
-<Base title="CV" description="이동찬 이력서">
+<Base title={page.title} description={page.description}>
   <div class="no-print flex items-center justify-between py-6">
-    <p class="text-sm text-zinc-500">인쇄 대화상자에서 "PDF로 저장"을 선택하세요.</p>
-    <button type="button" id="print" class="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white dark:text-zinc-950 hover:opacity-90">PDF로 저장</button>
+    <p class="text-sm text-zinc-500">{page.printHint}</p>
+    <button type="button" id="print" class="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white dark:text-zinc-950 hover:opacity-90">{page.printLabel}</button>
   </div>
 
   <article class="cv text-[15px] leading-relaxed">
@@ -26,7 +29,7 @@ const site = Astro.site!.host;
     </header>
 
     <section class="mt-5">
-      <h2 class="cv-h">Projects</h2>
+      <h2 class="cv-h">{page.projectsTitle}</h2>
       <ul class="space-y-3">
         {
           projects.map(({ id, data }) => (
@@ -49,13 +52,13 @@ const site = Astro.site!.host;
     </section>
 
     <div class="mt-5 grid gap-5 sm:grid-cols-2 print:grid-cols-2">
-      <section><h2 class="cv-h">수상</h2><ItemList items={awards} compact /></section>
-      <section><h2 class="cv-h">자격·교육</h2><ItemList items={certs} compact /></section>
+      <section><h2 class="cv-h">{about.awardsTitle}</h2><ItemList items={awards} compact /></section>
+      <section><h2 class="cv-h">{about.certsTitle}</h2><ItemList items={certs} compact /></section>
     </div>
-    <section class="mt-5"><h2 class="cv-h">대회·해커톤</h2><ItemList items={activities} compact /></section>
+    <section class="mt-5"><h2 class="cv-h">{about.activitiesTitle}</h2><ItemList items={activities} compact /></section>
 
     <section class="mt-5">
-      <h2 class="cv-h">Skills</h2>
+      <h2 class="cv-h">{about.skillsTitle}</h2>
       <dl class="grid grid-cols-[8rem_1fr] gap-1 text-sm">
         {Object.entries(skills).map(([k, v]) => (<><dt class="font-semibold">{k}</dt><dd>{v.join(', ')}</dd></>))}
       </dl>

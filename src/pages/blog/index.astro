@@ -1,6 +1,9 @@
 ---
 import { getCollection } from 'astro:content';
 import Base from '../../layouts/Base.astro';
+import { PAGES } from '../../data/pages';
+
+const page = PAGES.blog;
 
 const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
   (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
@@ -8,10 +11,10 @@ const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
 const series = [...new Set(posts.map((p) => p.data.series).filter(Boolean))] as string[];
 ---
 
-<Base title="Blog" description="개발, 연구, 대회 회고">
+<Base title={page.title} description={page.description}>
   <div class="flex items-baseline justify-between py-8">
-    <h1 class="text-3xl font-bold">Blog</h1>
-    <a href="/rss.xml" class="text-sm text-zinc-500 hover:text-accent">RSS 구독</a>
+    <h1 class="text-3xl font-bold">{page.title}</h1>
+    <a href="/rss.xml" class="text-sm text-zinc-500 hover:text-accent">{page.rssLabel}</a>
   </div>
   {
     series.length > 0 && (

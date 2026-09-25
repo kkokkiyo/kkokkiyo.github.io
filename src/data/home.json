@@ -1,4 +1,39 @@
 {
+  "kicker": "한양대학교 ERICA 컴퓨터학부",
+  "greeting": "안녕하세요, 이동찬입니다.",
+  "headline": "AI로 시각 콘텐츠를 만질 수 있게 만드는 개발자",
+  "intro": "웹툰, 이미지, 게임처럼 눈으로만 즐기던 콘텐츠를 촉각 디스플레이(Dot Pad)와 점자·음성으로 옮기는 연구를 하고 있습니다. 컴퓨터 비전, 생성 모델, LLM 에이전트를 도구로 씁니다.",
+  "buttons": [
+    {
+      "label": "프로젝트 보기",
+      "href": "/projects/",
+      "primary": true
+    },
+    {
+      "label": "촉각 변환 체험",
+      "href": "/playground/",
+      "primary": false
+    },
+    {
+      "label": "이력서",
+      "href": "/cv/",
+      "primary": false
+    }
+  ],
+  "showDotPad": true,
+  "dotPadLabel": "팩맨이 먹이 점을 향해 입을 벌린 모습",
+  "sections": [
+    {
+      "type": "featured",
+      "title": "대표 프로젝트",
+      "count": 6
+    },
+    {
+      "type": "posts",
+      "title": "최근 글",
+      "count": 3
+    }
+  ],
   "featured": [
     "safelift-xr",
     "tactile-game-agent",

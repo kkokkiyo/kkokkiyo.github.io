@@ -2,17 +2,20 @@
 import Base from '../layouts/Base.astro';
 import Prose from '../components/Prose.astro';
 import { getImage } from 'astro:assets';
+import { getEntry, render } from 'astro:content';
+import { mdxComponents } from '../components/mdx';
+import { inline } from '../data/inline';
 import boat from '../assets/projects/tgm/tgm-boat.png';
 
 const boatSample = await getImage({ src: boat, width: 512, format: 'webp' });
+const page = (await getEntry('pages', 'playground'))!;
+const intro = (page.data as { intro?: string }).intro;
+const { Content } = await render(page);
 ---
 
-<Base title="Playground" description="이미지를 Dot Pad 60×40 촉각 그래픽으로 바꿔 보는 체험 페이지" og="playground">
-  <h1 class="pt-8 text-3xl font-bold">Dot Pad Playground</h1>
-  <p class="mt-3 text-zinc-600 dark:text-zinc-400">
-    이미지를 올리거나 직접 그려서 60×40 = 2,400개 핀으로 바꿔 보세요. 해상도가 이만큼 낮으면 <strong>무엇을 남기고 무엇을 버릴지</strong>가 핵심 문제가 됩니다.
-    모든 처리는 브라우저에서만 이루어지고, 이미지는 어디에도 업로드되지 않습니다.
-  </p>
+<Base title={page.data.title} description={page.data.description ?? undefined} og="playground">
+  <h1 class="pt-8 text-3xl font-bold">{page.data.title}</h1>
+  {intro && <p class="mt-3 text-zinc-600 dark:text-zinc-400" set:html={inline(intro)} />}
 
   <div class="mt-8 grid gap-8 lg:grid-cols-[1fr_16rem]">
     <div>
@@ -87,19 +90,7 @@ const boatSample = await getImage({ src: boat, width: 512, format: 'webp' });
   </details>
 
   <div class="mt-12">
-    <Prose>
-      <h2>어떻게 동작하나요?</h2>
-      <ol>
-        <li>이미지를 240×160으로 줄이고 흑백으로 바꿉니다.</li>
-        <li><strong>윤곽선</strong> 모드는 Sobel 필터로 경계를, <strong>채우기</strong> 모드는 어두운 영역을 뽑습니다.</li>
-        <li>4×4 픽셀을 핀 하나로 묶어 60×40으로 줄이고, 선 굵기와 외톨이 핀 제거를 적용합니다.</li>
-        <li>2×4 핀을 한 셀(1바이트)로 묶어 30×10 셀, 600자리 Dot Pad hex로 내보냅니다.</li>
-      </ol>
-      <p>
-        실제 연구에서는 이 단순한 변환 대신 객체 검출, 레이어 분리, 생성 모델로 <em>의미 있는 정보만</em> 남깁니다.
-        <a href="/projects/dot-webtoon/">Dot Webtoon</a>, <a href="/projects/tgm/">TGM</a>, <a href="/projects/dot-pacman/">Dot Pacman</a>을 참고하세요.
-      </p>
-    </Prose>
+    <Prose><Content components={mdxComponents} /></Prose>
   </div>
 </Base>
 

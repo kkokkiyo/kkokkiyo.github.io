@@ -1,0 +1,26 @@
+---
+// 링크 버튼 묶음 (primary: 강조 버튼)
+interface Props {
+  buttons: { label: string; href: string; primary?: boolean | null }[];
+}
+
+const { buttons } = Astro.props;
+---
+
+<div class="mt-6 flex flex-wrap gap-3 text-sm">
+  {
+    buttons.map((b) => (
+      <a
+        href={b.href}
+        class:list={[
+          'rounded-lg px-4 py-2',
+          b.primary
+            ? 'bg-accent font-medium text-white hover:opacity-90 dark:text-zinc-950'
+            : 'border border-zinc-300 hover:border-accent dark:border-zinc-700',
+        ]}
+      >
+        {b.label}
+      </a>
+    ))
+  }
+</div>

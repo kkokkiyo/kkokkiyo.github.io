@@ -3,6 +3,8 @@ import type { CollectionEntry } from 'astro:content';
 import { CATEGORIES } from '../consts';
 import { projectBadges } from '../data/badges';
 import Badges from './Badges.astro';
+import { Image } from 'astro:assets';
+import { resolveImage } from '../data/images';
 
 interface Props {
   project: CollectionEntry<'projects'>;
@@ -19,6 +21,17 @@ const summary = lang === 'en' ? (data.summaryEn || data.summary) : data.summary;
   data-category={data.category}
   class="group relative flex flex-col rounded-xl border border-zinc-200 p-5 transition hover:border-accent dark:border-zinc-800"
 >
+  {
+    data.cover && (
+      <Image
+        src={resolveImage(data.cover)}
+        alt={data.coverAlt ?? ''}
+        widths={[400, 800]}
+        sizes="(max-width: 640px) 100vw, 420px"
+        class="-mx-5 -mt-5 mb-4 aspect-video w-[calc(100%+2.5rem)] max-w-none rounded-t-xl object-cover"
+      />
+    )
+  }
   <p class="text-xs text-zinc-500">{lang === 'ko' && `${CATEGORIES[data.category]} · `}{data.period}</p>
   <h3 class="mt-1 text-lg font-semibold group-hover:text-accent">
     <a href={`/projects/${id}/`} class="after:absolute after:inset-0">{title}</a>

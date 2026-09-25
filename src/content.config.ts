@@ -14,6 +14,8 @@ const projects = defineCollection({
     category: z.enum(['accessibility', 'ai', 'systems', 'course']),
     status: z.enum(['done', 'ongoing']).default('done'),
     award: z.string().nullish(),
+    cover: z.string().nullish(),
+    coverAlt: z.string().nullish(),
     stack: z.array(z.string()),
     highlights: z.array(z.string()).default([]),
     role: z.string().nullish(),
@@ -32,6 +34,8 @@ const blog = defineCollection({
     date: z.coerce.date(),
     tags: z.array(z.string()).default([]),
     series: z.string().nullish(),
+    cover: z.string().nullish(),
+    coverAlt: z.string().nullish(),
     draft: z.boolean().default(false),
   }),
 });
@@ -46,4 +50,23 @@ const logs = defineCollection({
   }),
 });
 
-export const collections = { projects, blog, logs };
+// 본문이 있는 고정 페이지 (Research, 접근성, Playground)
+const pages = defineCollection({
+  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/pages' }),
+  schema: z.looseObject({
+    title: z.string(),
+    description: z.string().nullish(),
+  }),
+});
+
+// 직접 추가하는 페이지 (/<주소>/)
+const custom = defineCollection({
+  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/custom' }),
+  schema: z.object({
+    title: z.string(),
+    description: z.string().nullish(),
+    draft: z.boolean().default(false),
+  }),
+});
+
+export const collections = { projects, blog, logs, pages, custom };
