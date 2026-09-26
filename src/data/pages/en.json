@@ -7,7 +7,7 @@
   "intro": "I work on bringing webtoons, images and games to blind and low-vision people through a 60×40-pin refreshable tactile display (Dot Pad), braille and speech. My tools are computer vision, generative models and LLM agents.",
   "buttons": [
     {
-      "label": "Play Pac-Man on a Dot Pad",
+      "label": "Try the Dot Pad playground",
       "href": "/playground/",
       "primary": true
     },

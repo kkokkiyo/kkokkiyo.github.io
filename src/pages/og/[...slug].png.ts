@@ -20,7 +20,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
   return [
     { params: { slug: 'default' }, props: { title: SITE.tagline, kicker: SITE.affiliation } },
     { params: { slug: 'research' }, props: { title: 'Dot Pad 기반 콘텐츠 접근성 연구', kicker: 'Research' } },
-    { params: { slug: 'playground' }, props: { title: '팩맨을 60×40 핀으로 옮겨 봤습니다', kicker: 'Dot Pad 팩맨' } },
+    { params: { slug: 'playground' }, props: { title: '팩맨을 하거나 이미지를 핀으로 바꿔 보세요', kicker: 'Dot Pad Playground' } },
     ...projects.map((p) => ({ params: { slug: `projects/${p.id}` }, props: { title: p.data.title, kicker: p.data.award || 'Project' } })),
     ...posts.map((p) => ({ params: { slug: `blog/${p.id}` }, props: { title: p.data.title, kicker: p.data.series || 'Blog' } })),
   ];

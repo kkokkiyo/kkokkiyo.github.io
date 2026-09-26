@@ -2,178 +2,83 @@
 import { getEntry, render } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import Prose from '../components/Prose.astro';
+import PacmanDemo from '../components/PacmanDemo.astro';
+import ImageConverter from '../components/ImageConverter.astro';
 import { mdxComponents } from '../components/mdx';
 import { inline } from '../data/inline';
-import { GLYPHS } from '../scripts/dotpad-pacman';
+
+type PlaygroundPage = { intro?: string; pacmanTab?: string; pacmanIntro?: string; imageTab?: string; imageIntro?: string; imageHowTo?: string };
 
 const page = (await getEntry('pages', 'playground'))!;
-const intro = (page.data as { intro?: string }).intro;
+const data = page.data as typeof page.data & PlaygroundPage;
 const { Content } = await render(page);
-
-const legend = [
-  { name: '벽', rows: ['11', '11'], note: '핀을 모두 올림' },
-  { name: '길', rows: ['00', '00'], note: '핀을 모두 내림' },
-  { name: '코인', rows: ['00', '01'], note: '길 가운데 핀 하나' },
-  { name: '파워젬', rows: GLYPHS.power, note: '대각선 두 핀' },
-  { name: '팩맨', rows: GLYPHS.pacman, note: '한쪽이 열린 모양' },
-  { name: '유령', rows: GLYPHS.ghost, note: '파워젬과 반대 대각선' },
-  { name: '과일', rows: GLYPHS.fruit, note: '네 핀을 모두 올림' },
-];
+const paragraphs = (text?: string) => (text ?? '').split(/\n\s*\n/).map((t) => t.trim()).filter(Boolean);
 ---
 
 <Base title={page.data.title} description={page.data.description ?? undefined} og="playground">
   <h1 class="pt-8 text-3xl font-bold">{page.data.title}</h1>
-  {intro && <p class="mt-3 text-zinc-600 dark:text-zinc-400" set:html={inline(intro)} />}
+  {data.intro && <p class="mt-3 text-zinc-600 dark:text-zinc-400" set:html={inline(data.intro)} />}
 
-  <div
-    id="arena"
-    tabindex="0"
-    class="mt-8 grid gap-6 rounded-2xl outline-offset-4 lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]"
-    aria-label="팩맨 게임. 방향키로 움직이고, 스페이스로 일시정지, 1은 전체 지도, 2는 확대, 3은 구역 자동 전환입니다."
-    aria-describedby="game-status"
-  >
-    <div>
-      <p class="mb-2 text-sm font-semibold">게임 화면</p>
-      <canvas id="game" width="560" height="600" class="block w-full rounded-xl bg-black" aria-hidden="true"></canvas>
-    </div>
-    <div>
-      <p class="mb-2 text-sm font-semibold">Dot Pad 60×40 핀</p>
-      <div class="rounded-2xl bg-zinc-900 p-3">
-        <canvas id="pad" width="1200" height="800" class="block aspect-[3/2] w-full rounded-lg" aria-hidden="true"></canvas>
-      </div>
-      <p id="view-label" class="mt-2 text-sm text-zinc-500"></p>
-      <div class="mt-3 flex flex-wrap gap-2 text-sm" role="group" aria-label="Dot Pad 보기">
-        <button type="button" class="chip" data-view="overview" aria-pressed="true">전체 지도 (1)</button>
-        <button type="button" class="chip" data-view="focus" aria-pressed="false">확대 (2)</button>
-        <button type="button" class="chip" id="follow" aria-pressed="true">구역 자동 전환 (3)</button>
-      </div>
-      <div class="mt-2 flex flex-wrap gap-2 text-sm" role="group" aria-label="확대 구역 직접 이동">
-        <button type="button" class="chip" data-pan="-1,0">◀ 왼쪽 구역</button>
-        <button type="button" class="chip" data-pan="1,0">오른쪽 구역 ▶</button>
-        <button type="button" class="chip" data-pan="0,-1">▲ 위 구역</button>
-        <button type="button" class="chip" data-pan="0,1">아래 구역 ▼</button>
-      </div>
-    </div>
+  <div role="tablist" aria-label="체험 고르기" class="mt-8 flex gap-2 border-b border-zinc-200 dark:border-zinc-800">
+    <button type="button" role="tab" id="tab-pacman" aria-controls="panel-pacman" aria-selected="true" class="tab">{data.pacmanTab ?? 'Dot Pad 팩맨'}</button>
+    <button type="button" role="tab" id="tab-image" aria-controls="panel-image" aria-selected="false" tabindex="-1" class="tab">{data.imageTab ?? '이미지 핀 변환'}</button>
   </div>
 
-  <div class="mt-4 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm">
-    <p id="game-status" class="font-medium"></p>
-    <div class="flex flex-wrap gap-2">
-      <button type="button" class="chip" id="start">게임 시작</button>
-      <button type="button" class="chip" id="pause">일시정지</button>
-      <button type="button" class="chip" id="random">랜덤 미로</button>
-      <button type="button" class="chip" id="describe">지금 상황 듣기</button>
-    </div>
-    <label class="flex items-center gap-2"><input type="checkbox" id="speak" /> 음성으로도 읽기</label>
-  </div>
-  <p id="game-message" class="mt-2 min-h-6 text-sm text-zinc-600 dark:text-zinc-400" aria-live="polite"></p>
-
-  <div class="mt-4 grid w-44 grid-cols-3 gap-1 lg:hidden" role="group" aria-label="방향 버튼">
-    <span></span><button type="button" class="chip" data-dir="0,-1" aria-label="위">▲</button><span></span>
-    <button type="button" class="chip" data-dir="-1,0" aria-label="왼쪽">◀</button>
-    <button type="button" class="chip" data-dir="0,1" aria-label="아래">▼</button>
-    <button type="button" class="chip" data-dir="1,0" aria-label="오른쪽">▶</button>
-  </div>
-
-  <section class="mt-10" aria-labelledby="legend-heading">
-    <h2 id="legend-heading" class="text-lg font-bold">촉각 기호</h2>
-    <ul class="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
-      {
-        legend.map((g) => (
-          <li class="flex items-center gap-3 rounded-xl border border-zinc-200 p-3 dark:border-zinc-800">
-            <span class="grid shrink-0 grid-cols-2 gap-1 rounded-md bg-zinc-900 p-2" aria-hidden="true">
-              {g.rows.flatMap((row) => [...row].map((p) => <span class:list={['size-3 rounded-full', p === '1' ? 'bg-zinc-100' : 'bg-zinc-600']} />))}
-            </span>
-            <span class="text-sm">
-              <strong class="block">{g.name}</strong>
-              <span class="text-zinc-500">{g.note}</span>
-            </span>
-          </li>
-        ))
-      }
-    </ul>
+  <section id="panel-pacman" role="tabpanel" aria-labelledby="tab-pacman" class="pt-6">
+    {data.pacmanIntro && <p class="text-zinc-600 dark:text-zinc-400" set:html={inline(data.pacmanIntro)} />}
+    <PacmanDemo />
+    <div class="mt-12"><Prose><Content components={mdxComponents} /></Prose></div>
   </section>
 
-  <div class="mt-12">
-    <Prose><Content components={mdxComponents} /></Prose>
-  </div>
+  <section id="panel-image" role="tabpanel" aria-labelledby="tab-image" class="pt-6" hidden>
+    {data.imageIntro && <p class="mb-8 text-zinc-600 dark:text-zinc-400" set:html={inline(data.imageIntro)} />}
+    <ImageConverter />
+    {
+      paragraphs(data.imageHowTo).length > 0 && (
+        <div class="mt-12">
+          <Prose>{paragraphs(data.imageHowTo).map((t) => <p set:html={inline(t)} />)}</Prose>
+        </div>
+      )
+    }
+  </section>
 </Base>
 
 <style>
-  .chip {
-    border-radius: 9999px;
-    border: 1px solid var(--color-zinc-300);
-    padding: 0.25rem 0.75rem;
+  .tab {
+    margin-bottom: -1px;
+    border-bottom: 3px solid transparent;
+    padding: 0.5rem 1rem;
+    font-weight: 600;
+    color: var(--color-zinc-500);
     cursor: pointer;
   }
-  .chip:hover { border-color: var(--color-accent); color: var(--color-accent); }
-  .chip[aria-pressed='true'] { background: var(--color-accent); border-color: var(--color-accent); color: white; }
-  :global([data-theme='dark']) .chip { border-color: var(--color-zinc-700); }
-  :global([data-theme='dark']) .chip[aria-pressed='true'] { color: var(--color-zinc-950); }
+  .tab[aria-selected='true'] {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+  }
 </style>
 
 <script>
-  import { createGame } from '../scripts/dotpad-pacman';
-
-  const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
-  const arena = $('arena');
-  const message = $('game-message');
-  const speakBox = $<HTMLInputElement>('speak');
-
-  const say = (text: string) => {
-    message.textContent = text;
-    if (text && speakBox.checked && 'speechSynthesis' in window) {
-      speechSynthesis.cancel();
-      const u = new SpeechSynthesisUtterance(text);
-      u.lang = 'ko-KR';
-      speechSynthesis.speak(u);
+  const tabs = [...document.querySelectorAll<HTMLButtonElement>('[role=tab]')];
+  const select = (tab: HTMLButtonElement, focus = false) => {
+    for (const t of tabs) {
+      const on = t === tab;
+      t.setAttribute('aria-selected', String(on));
+      t.tabIndex = on ? 0 : -1;
+      document.getElementById(t.getAttribute('aria-controls')!)!.hidden = !on;
     }
+    if (focus) tab.focus();
+    history.replaceState(null, '', tab.id === 'tab-image' ? '#image' : '#pacman');
   };
-
-  const modeName: Record<string, string> = { ready: '준비', playing: '진행 중', paused: '일시정지', over: '게임 오버', won: '라운드 클리어' };
-  const game = createGame({
-    canvas: $<HTMLCanvasElement>('game'),
-    pad: $<HTMLCanvasElement>('pad'),
-    onStatus: ({ score, lives, mode, view }) => {
-      $('game-status').textContent = `점수 ${score}, 목숨 ${lives}, ${modeName[mode]}`;
-      $('view-label').textContent = view;
-    },
-    onMessage: say,
+  tabs.forEach((tab, i) => {
+    tab.addEventListener('click', () => select(tab));
+    tab.addEventListener('keydown', (e) => {
+      if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+      e.preventDefault();
+      select(tabs[(i + (e.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length], true);
+    });
   });
-
-  const syncButtons = () => {
-    document.querySelectorAll<HTMLButtonElement>('[data-view]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.view === game.view)));
-    $('follow').setAttribute('aria-pressed', String(game.follow));
-  };
-
-  const DIRS: Record<string, [number, number]> = {
-    ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1],
-    a: [-1, 0], d: [1, 0], w: [0, -1], s: [0, 1],
-  };
-
-  arena.addEventListener('keydown', (e) => {
-    const dir = DIRS[e.key];
-    if (dir) { e.preventDefault(); game.steer(dir); return; }
-    if (e.key === ' ') { e.preventDefault(); game.togglePause(); }
-    else if (e.key === '1') game.setView('overview');
-    else if (e.key === '2') game.setView('focus');
-    else if (e.key === '3') game.toggleFollow();
-    else return;
-    syncButtons();
-  });
-
-  document.querySelectorAll<HTMLButtonElement>('[data-view]').forEach((b) =>
-    b.addEventListener('click', () => { game.setView(b.dataset.view as 'overview' | 'focus'); syncButtons(); }),
-  );
-  $('follow').addEventListener('click', () => { game.toggleFollow(); syncButtons(); });
-  document.querySelectorAll<HTMLButtonElement>('[data-pan]').forEach((b) =>
-    b.addEventListener('click', () => { const [dx, dy] = b.dataset.pan!.split(',').map(Number); game.pan(dx, dy); syncButtons(); }),
-  );
-  document.querySelectorAll<HTMLButtonElement>('[data-dir]').forEach((b) =>
-    b.addEventListener('click', () => game.steer(b.dataset.dir!.split(',').map(Number) as [number, number])),
-  );
-  $('start').addEventListener('click', () => { arena.focus(); say('방향키로 움직이세요.'); });
-  $('pause').addEventListener('click', () => game.togglePause());
-  $('random').addEventListener('click', () => { game.newGame(true); arena.focus(); });
-  $('describe').addEventListener('click', () => say(game.describe()));
+  const fromHash = () => select(location.hash === '#image' ? tabs[1] : tabs[0]);
+  if (location.hash) fromHash();
+  addEventListener('hashchange', fromHash);
 </script>

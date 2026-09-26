@@ -1,0 +1,305 @@
+---
+// 이미지를 Dot Pad 60×40 핀으로 바꿔 보는 변환기
+import { getImage } from 'astro:assets';
+import boat from '../assets/projects/tgm/tgm-boat.png';
+
+const boatSample = await getImage({ src: boat, width: 512, format: 'webp' });
+---
+
+  <div class="grid gap-8 lg:grid-cols-[1fr_16rem]">
+    <div>
+      <div class="rounded-2xl bg-zinc-900 p-3 sm:p-4">
+        <canvas
+          id="ic-pad"
+          width="1200"
+          height="800"
+          tabindex="0"
+          class="block aspect-[3/2] w-full touch-none rounded-lg"
+          role="application"
+          aria-roledescription="촉각 핀 캔버스"
+          aria-label="Dot Pad 60×40 핀. 방향키로 이동하고 스페이스로 핀을 올리거나 내립니다."
+          aria-describedby="ic-pad-status"></canvas>
+      </div>
+      <p id="ic-pad-status" class="mt-3 text-sm text-zinc-500" aria-live="polite"></p>
+    </div>
+
+    <form id="ic-controls" class="space-y-5 text-sm" onsubmit="return false">
+      <fieldset>
+        <legend class="mb-2 font-semibold">입력</legend>
+        <label class="block cursor-pointer rounded-lg border border-dashed border-zinc-300 p-3 text-center hover:border-accent dark:border-zinc-700">
+          이미지 선택 또는 끌어다 놓기
+          <input id="ic-file" type="file" accept="image/*" class="sr-only" />
+        </label>
+        <div class="mt-2 flex flex-wrap gap-2">
+          <button type="button" class="chip" data-sample="shapes">도형</button>
+          <button type="button" class="chip" data-sample="text">글자</button>
+          <button type="button" class="chip" data-sample="boat" data-src={boatSample.src}>돛단배(TGM)</button>
+          <button type="button" class="chip" data-sample="clear">지우기</button>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend class="mb-2 font-semibold">변환 방식</legend>
+        <label class="mr-3"><input type="radio" name="ic-mode" value="edge" checked /> 윤곽선</label>
+        <label><input type="radio" name="ic-mode" value="fill" /> 채우기</label>
+      </fieldset>
+
+      <label class="block">
+        <span class="font-semibold">임계값</span> <output id="ic-threshold-out">50</output>
+        <input id="ic-threshold" type="range" min="5" max="95" value="50" class="w-full" />
+      </label>
+      <label class="block">
+        <span class="font-semibold">선 굵기</span> <output id="ic-thickness-out">0</output>
+        <input id="ic-thickness" type="range" min="0" max="2" value="0" class="w-full" />
+      </label>
+      <label class="flex items-center gap-2"><input id="ic-denoise" type="checkbox" checked /> 외톨이 핀 제거</label>
+      <label class="flex items-center gap-2"><input id="ic-invert" type="checkbox" /> 반전</label>
+
+      <fieldset>
+        <legend class="mb-2 font-semibold">직접 그리기</legend>
+        <label class="mr-3"><input type="radio" name="ic-tool" value="pen" checked /> 펜</label>
+        <label><input type="radio" name="ic-tool" value="eraser" /> 지우개</label>
+      </fieldset>
+
+      <fieldset>
+        <legend class="mb-2 font-semibold">내보내기</legend>
+        <div class="flex flex-wrap gap-2">
+          <button type="button" class="chip" id="ic-copy-hex">Dot Pad hex 복사</button>
+          <button type="button" class="chip" id="ic-copy-braille">점자 텍스트 복사</button>
+          <button type="button" class="chip" id="ic-download">PNG 저장</button>
+        </div>
+        <p id="ic-copy-status" class="mt-2 text-xs text-zinc-500" aria-live="polite"></p>
+      </fieldset>
+    </form>
+  </div>
+
+  <details class="mt-8 text-sm">
+    <summary class="cursor-pointer font-semibold">점자 텍스트로 보기 (점자 디스플레이·스크린 리더용)</summary>
+    <pre id="ic-braille" class="mt-3 overflow-x-auto rounded-lg bg-zinc-100 p-3 font-mono leading-none dark:bg-zinc-900" aria-label="현재 핀 배열의 8점 점자 표현, 30칸 10줄"></pre>
+  </details>
+
+<script>
+  const COLS = 60, ROWS = 40, CELL = 20; // CELL: 캔버스상 핀 간격(px)
+  const W = COLS * 4, H = ROWS * 4; // 처리 해상도 240×160
+  // Dot Pad SDK 셀 비트 배치 (2×4 핀 → 1바이트)
+  const SDK_BITS = [[1, 2], [4, 8], [16, 32], [64, 128]];
+  // 유니코드 8점 점자 비트
+  const UNI_BITS = [[0x01, 0x08], [0x02, 0x10], [0x04, 0x20], [0x40, 0x80]];
+
+  const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
+  const pad = $<HTMLCanvasElement>('ic-pad');
+  const ctx = pad.getContext('2d')!;
+  const work = document.createElement('canvas');
+  work.width = W; work.height = H;
+  const wctx = work.getContext('2d', { willReadFrequently: true })!;
+
+  let pins = new Uint8Array(COLS * ROWS);
+  let source: CanvasImageSource | null = null;
+  let cursor = { x: 30, y: 20 };
+  let showCursor = false;
+
+  const opts = () => ({
+    mode: (document.querySelector<HTMLInputElement>('input[name=ic-mode]:checked')!).value,
+    threshold: Number($<HTMLInputElement>('ic-threshold').value) / 100,
+    thickness: Number($<HTMLInputElement>('ic-thickness').value),
+    denoise: $<HTMLInputElement>('ic-denoise').checked,
+    invert: $<HTMLInputElement>('ic-invert').checked,
+  });
+
+  function convert() {
+    if (!source) return;
+    const o = opts();
+    wctx.fillStyle = '#fff';
+    wctx.fillRect(0, 0, W, H);
+    const sw = (source as HTMLImageElement).width, sh = (source as HTMLImageElement).height;
+    const s = Math.min(W / sw, H / sh);
+    wctx.drawImage(source, (W - sw * s) / 2, (H - sh * s) / 2, sw * s, sh * s);
+    const px = wctx.getImageData(0, 0, W, H).data;
+    const lum = new Float32Array(W * H);
+    for (let i = 0; i < W * H; i++) lum[i] = (0.299 * px[i * 4] + 0.587 * px[i * 4 + 1] + 0.114 * px[i * 4 + 2]) / 255;
+
+    const on = new Uint8Array(W * H);
+    if (o.mode === 'fill') {
+      for (let i = 0; i < W * H; i++) on[i] = lum[i] < o.threshold ? 1 : 0;
+    } else {
+      const t = (1 - o.threshold) * 2; // 임계값이 높을수록 약한 경계까지 포함
+      for (let y = 1; y < H - 1; y++)
+        for (let x = 1; x < W - 1; x++) {
+          const g = (dx: number, dy: number) => lum[(y + dy) * W + x + dx];
+          const gx = g(1, -1) + 2 * g(1, 0) + g(1, 1) - g(-1, -1) - 2 * g(-1, 0) - g(-1, 1);
+          const gy = g(-1, 1) + 2 * g(0, 1) + g(1, 1) - g(-1, -1) - 2 * g(0, -1) - g(1, -1);
+          on[y * W + x] = Math.hypot(gx, gy) > t ? 1 : 0;
+        }
+    }
+
+    // 4×4 블록 → 핀 1개
+    const next = new Uint8Array(COLS * ROWS);
+    const need = o.mode === 'fill' ? 6 : 2;
+    for (let r = 0; r < ROWS; r++)
+      for (let c = 0; c < COLS; c++) {
+        let n = 0;
+        for (let dy = 0; dy < 4; dy++) for (let dx = 0; dx < 4; dx++) n += on[(r * 4 + dy) * W + c * 4 + dx];
+        next[r * COLS + c] = n >= need ? 1 : 0;
+      }
+    pins = postprocess(next, o);
+    draw();
+  }
+
+  function neighbors(a: Uint8Array, r: number, c: number, diag: boolean) {
+    let n = 0;
+    for (let dy = -1; dy <= 1; dy++)
+      for (let dx = -1; dx <= 1; dx++) {
+        if ((!dx && !dy) || (!diag && dx && dy)) continue;
+        const y = r + dy, x = c + dx;
+        if (y >= 0 && y < ROWS && x >= 0 && x < COLS) n += a[y * COLS + x];
+      }
+    return n;
+  }
+
+  function postprocess(a: Uint8Array, o: ReturnType<typeof opts>) {
+    for (let k = 0; k < o.thickness; k++) {
+      const b = a.slice();
+      for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) if (neighbors(a, r, c, false)) b[r * COLS + c] = 1;
+      a = b;
+    }
+    if (o.denoise) {
+      const b = a.slice();
+      for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) if (a[r * COLS + c] && !neighbors(a, r, c, true)) b[r * COLS + c] = 0;
+      a = b;
+    }
+    if (o.invert) a = a.map((v) => 1 - v);
+    return a;
+  }
+
+  function draw() {
+    ctx.fillStyle = '#18181b';
+    ctx.fillRect(0, 0, pad.width, pad.height);
+    for (let r = 0; r < ROWS; r++)
+      for (let c = 0; c < COLS; c++) {
+        const up = pins[r * COLS + c];
+        ctx.beginPath();
+        ctx.arc(c * CELL + CELL / 2, r * CELL + CELL / 2, up ? 7.5 : 5, 0, Math.PI * 2);
+        ctx.fillStyle = up ? '#fafafa' : '#3f3f46';
+        ctx.fill();
+      }
+    if (showCursor) {
+      ctx.strokeStyle = '#60a5fa';
+      ctx.lineWidth = 3;
+      ctx.strokeRect(cursor.x * CELL + 1, cursor.y * CELL + 1, CELL - 2, CELL - 2);
+    }
+    const count = pins.reduce((s, v) => s + v, 0);
+    $('ic-pad-status').textContent = `올라온 핀 ${count.toLocaleString()}개 / 2,400개 (${((count / 2400) * 100).toFixed(1)}%)`;
+    $('ic-braille').textContent = toBraille();
+  }
+
+  function cells(bits: number[][]) {
+    const out: number[][] = [];
+    for (let cr = 0; cr < ROWS / 4; cr++) {
+      const row: number[] = [];
+      for (let cc = 0; cc < COLS / 2; cc++) {
+        let v = 0;
+        for (let dy = 0; dy < 4; dy++) for (let dx = 0; dx < 2; dx++) if (pins[(cr * 4 + dy) * COLS + cc * 2 + dx]) v |= bits[dy][dx];
+        row.push(v);
+      }
+      out.push(row);
+    }
+    return out;
+  }
+  const toHex = () => cells(SDK_BITS).flat().map((v) => v.toString(16).toUpperCase().padStart(2, '0')).join('');
+  const toBraille = () => cells(UNI_BITS).map((row) => row.map((v) => String.fromCharCode(0x2800 + v)).join('')).join('\n');
+
+  // 입력
+  function loadUrl(url: string) {
+    const img = new Image();
+    img.onload = () => { source = img; convert(); };
+    img.src = url;
+  }
+  function loadFile(file?: File | null) {
+    if (file?.type.startsWith('image/')) loadUrl(URL.createObjectURL(file));
+  }
+  function sample(kind: string, src?: string) {
+    if (kind === 'clear') { source = null; pins = new Uint8Array(COLS * ROWS); draw(); return; }
+    if (kind === 'boat' && src) return loadUrl(src);
+    const c = document.createElement('canvas');
+    c.width = 600; c.height = 400;
+    const g = c.getContext('2d')!;
+    g.fillStyle = '#fff'; g.fillRect(0, 0, 600, 400);
+    g.fillStyle = '#000'; g.strokeStyle = '#000'; g.lineWidth = 14;
+    if (kind === 'shapes') {
+      g.beginPath(); g.arc(130, 200, 90, 0, Math.PI * 2); g.stroke();
+      g.strokeRect(245, 110, 170, 180);
+      g.beginPath(); g.moveTo(520, 110); g.lineTo(590, 290); g.lineTo(450, 290); g.closePath(); g.fill();
+    } else {
+      g.font = 'bold 190px "Pretendard Variable", sans-serif';
+      g.textAlign = 'center'; g.textBaseline = 'middle';
+      g.fillText('점자', 300, 210);
+    }
+    source = c;
+    convert();
+  }
+
+  $<HTMLInputElement>('ic-file').addEventListener('change', (e) => loadFile((e.target as HTMLInputElement).files?.[0]));
+  pad.addEventListener('dragover', (e) => e.preventDefault());
+  pad.addEventListener('drop', (e) => { e.preventDefault(); loadFile(e.dataTransfer?.files[0]); });
+  document.querySelectorAll<HTMLButtonElement>('[data-sample]').forEach((b) => b.addEventListener('click', () => sample(b.dataset.sample!, b.dataset.src)));
+
+  const controls = $<HTMLFormElement>('ic-controls');
+  controls.addEventListener('input', (e) => {
+    const t = e.target as HTMLInputElement;
+    if (t.type === 'range') (document.getElementById(`${t.id}-out`) as HTMLOutputElement).value = t.value;
+    if (['ic-mode', 'ic-threshold', 'ic-thickness', 'ic-denoise', 'ic-invert'].includes(t.name || t.id)) convert();
+  });
+
+  // 직접 그리기 (마우스·터치·키보드)
+  const tool = () => (document.querySelector<HTMLInputElement>('input[name=ic-tool]:checked')!).value;
+  let painting = false;
+  function paintAt(e: PointerEvent) {
+    const rect = pad.getBoundingClientRect();
+    const c = Math.floor(((e.clientX - rect.left) / rect.width) * COLS);
+    const r = Math.floor(((e.clientY - rect.top) / rect.height) * ROWS);
+    if (c < 0 || c >= COLS || r < 0 || r >= ROWS) return;
+    pins[r * COLS + c] = tool() === 'pen' ? 1 : 0;
+    cursor = { x: c, y: r };
+    draw();
+  }
+  pad.addEventListener('pointerdown', (e) => { painting = true; pad.setPointerCapture(e.pointerId); paintAt(e); });
+  pad.addEventListener('pointermove', (e) => painting && paintAt(e));
+  pad.addEventListener('pointerup', () => (painting = false));
+
+  pad.addEventListener('focus', () => { showCursor = true; draw(); });
+  pad.addEventListener('blur', () => { showCursor = false; draw(); });
+  pad.addEventListener('keydown', (e) => {
+    const moves: Record<string, [number, number]> = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] };
+    if (moves[e.key]) {
+      e.preventDefault();
+      cursor.x = Math.min(COLS - 1, Math.max(0, cursor.x + moves[e.key][0]));
+      cursor.y = Math.min(ROWS - 1, Math.max(0, cursor.y + moves[e.key][1]));
+    } else if (e.key === ' ' || e.key === 'Enter') {
+      e.preventDefault();
+      const i = cursor.y * COLS + cursor.x;
+      pins[i] = pins[i] ? 0 : 1;
+    } else return;
+    draw();
+    $('ic-pad-status').textContent = `${cursor.x + 1}열 ${cursor.y + 1}행, 핀 ${pins[cursor.y * COLS + cursor.x] ? '올라옴' : '내려감'}`;
+  });
+
+  // 내보내기
+  async function copy(text: string, label: string) {
+    try {
+      await navigator.clipboard.writeText(text);
+      $('ic-copy-status').textContent = `${label}를 복사했습니다.`;
+    } catch {
+      $('ic-copy-status').textContent = '복사하지 못했습니다. 아래 점자 텍스트를 직접 선택해 주세요.';
+    }
+  }
+  $('ic-copy-hex').addEventListener('click', () => copy(toHex(), 'Dot Pad hex(600자리)'));
+  $('ic-copy-braille').addEventListener('click', () => copy(toBraille(), '점자 텍스트'));
+  $('ic-download').addEventListener('click', () => {
+    const a = document.createElement('a');
+    a.download = 'dotpad.png';
+    a.href = pad.toDataURL('image/png');
+    a.click();
+  });
+
+  document.fonts.ready.then(() => sample('shapes'));
+</script>
