@@ -14,10 +14,16 @@ const fonts = await Promise.all(
   })),
 );
 
+// 색 구성 (light/ 경로는 라이트 모드용)
+const THEMES = {
+  dark: { bg: '#09090b', fg: '#fafafa', kicker: '#60a5fa', sub: '#a1a1aa', on: '#fafafa', off: '#3f3f46' },
+  light: { bg: '#ffffff', fg: '#18181b', kicker: '#2563eb', sub: '#52525b', on: '#18181b', off: '#d4d4d8', border: '4px solid #d4d4d8' },
+};
+
 export const getStaticPaths: GetStaticPaths = async () => {
   const projects = await getCollection('projects', ({ data }) => !data.draft);
   const posts = await getCollection('blog', ({ data }) => !data.draft);
-  return [
+  const entries = [
     { params: { slug: 'default' }, props: { title: SITE.tagline, kicker: SITE.affiliation } },
     { params: { slug: 'research' }, props: { title: 'Dot Pad 기반 콘텐츠 접근성 연구', kicker: 'Research' } },
     { params: { slug: 'playground' }, props: { title: '팩맨을 하거나 이미지를 핀으로 바꿔 보세요', kicker: 'Dot Pad Playground' } },
@@ -30,6 +36,10 @@ export const getStaticPaths: GetStaticPaths = async () => {
       },
     })),
     ...posts.map((p) => ({ params: { slug: `blog/${p.id}` }, props: { title: p.data.title, kicker: p.data.series || 'Blog', seed: p.id } })),
+  ];
+  return [
+    ...entries.map((e) => ({ ...e, props: { ...e.props, theme: 'dark' } })),
+    ...entries.map((e) => ({ params: { slug: `light/${e.params.slug}` }, props: { ...e.props, theme: 'light' } })),
   ];
 };
 
@@ -50,17 +60,18 @@ function pinPattern(seed?: string) {
 const h = (type: string, style: Record<string, unknown>, children?: unknown) => ({ type, props: { style, children } });
 
 export const GET: APIRoute = async ({ props }) => {
-  const { title, kicker, seed } = props as { title: string; kicker: string; seed?: string };
+  const { title, kicker, seed, theme } = props as { title: string; kicker: string; seed?: string; theme: keyof typeof THEMES };
   const pins = pinPattern(seed);
+  const c = THEMES[theme];
   const svg = await satori(
-    h('div', { width: 1200, height: 630, display: 'flex', background: '#09090b', color: '#fafafa', padding: 72, fontFamily: 'Pretendard' }, [
+    h('div', { width: 1200, height: 630, display: 'flex', background: c.bg, color: c.fg, padding: 72, border: 'border' in c ? c.border : 'none', fontFamily: 'Pretendard' }, [
       h('div', { display: 'flex', flexDirection: 'column', justifyContent: 'space-between', flex: 1, paddingRight: 48 }, [
-        h('div', { fontSize: 30, color: '#60a5fa' }, kicker),
+        h('div', { fontSize: 30, color: c.kicker }, kicker),
         h('div', { fontSize: title.length > 24 ? 60 : 72, fontWeight: 700, lineHeight: 1.2, wordBreak: 'keep-all' }, title),
-        h('div', { fontSize: 28, color: '#a1a1aa' }, `${SITE.author}   kkokkiyo.github.io`),
+        h('div', { fontSize: 28, color: c.sub }, `${SITE.author}   kkokkiyo.github.io`),
       ]),
       h('div', { display: 'flex', flexWrap: 'wrap', width: 300, alignContent: 'center', gap: 14 },
-        pins.map((on) => h('div', { width: 22, height: 22, borderRadius: 11, background: on ? '#fafafa' : '#3f3f46' })),
+        pins.map((on) => h('div', { width: 22, height: 22, borderRadius: 11, background: on ? c.on : c.off })),
       ),
     ]) as never,
     { width: 1200, height: 630, fonts },
