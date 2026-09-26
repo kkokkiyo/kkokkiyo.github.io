@@ -1,22 +1,21 @@
 ---
 title: Dot Webtoon
-summary: 웹툰 컷을 촉각 그래픽과 음성으로 바꿔 시각장애인도 웹툰을 읽을 수 있게 한 서비스와, 그 뒤에 이어서 한 레이어 분리 실험입니다.
+summary: 연구실에서 만들던 웹툰 촉각화 서비스를 이어받아 일부를 고치고, 레이어를 나누는 실험을 더해 본 프로젝트입니다.
 period: "2025.08 – 2026.06"
 category: accessibility
 stack: [FastAPI, YOLO, SAM, OpenCV, Pororo OCR, Google Cloud TTS, Gemini API]
 highlights:
-  - 실제 사용자를 대상으로 사용자 연구를 진행했습니다.
   - 인물, 소품, 배경을 레이어로 나누는 실험 앱과 Dot Pad 시뮬레이터를 만들었습니다.
-role: 팀 프로젝트
+role: 연구실 프로젝트를 이어받아 일부 수정
 titleEn: Dot Webtoon
-summaryEn: Makes webtoons readable for blind users by converting panels into tactile graphics, OCR text, translation and TTS, followed by layer-separation research.
+summaryEn: Took over a lab project that turns webtoon panels into tactile graphics and speech, made small changes, and added layer-separation experiments.
 order: 6
 ---
 
-## 웹툰 촉각화 서비스 (팀)
+## 어떤 프로젝트인가
 
-컷에서 인물과 말풍선을 찾은 다음, 대사는 OCR로 읽어 음성으로 들려주고 그림은 촉각 그래픽으로 바꿔 Dot Pad에 띄웁니다.
+연구실에서 만들고 있던 웹툰 촉각화 서비스입니다. 컷에서 인물과 말풍선을 찾고, 대사는 OCR로 읽어 음성으로 들려주고, 그림은 촉각 그래픽으로 바꿔 Dot Pad에 띄웁니다. 서비스의 대부분은 연구실 선배들이 만들었고, 저는 이걸 이어받아 일부를 고쳤습니다.
 
-## 레이어 분리 실험 (개인)
+## 제가 더해 본 것
 
-서비스를 만들고 나서 가장 걸렸던 건, 60×40 핀에 컷을 통째로 올리면 손으로 만져도 뭐가 뭔지 알기 어렵다는 점이었습니다. 그래서 컷을 전체 구도, 인물(YOLO), 소품(SAM, YOLO), 배경으로 나눠 따로 보여 주는 방식을 실험했습니다. 노이즈를 얼마나 지울지, 선을 얼마나 두껍게 할지도 바꿔 가며 어떤 조합이 가장 알아보기 쉬운지 비교했습니다.
+손으로 만져 보니 60×40 핀에 컷을 통째로 올리면 뭐가 뭔지 알기 어려웠습니다. 그래서 컷을 전체 구도, 인물(YOLO), 소품(SAM, YOLO), 배경으로 나눠 따로 보여 주는 실험 앱을 만들었습니다. 노이즈를 얼마나 지울지, 선을 얼마나 두껍게 할지도 바꿔 가며 어떤 조합이 알아보기 쉬운지 비교해 봤습니다.
